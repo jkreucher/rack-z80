@@ -1,0 +1,91 @@
+
+(rules PCB RackZ80_Processor
+  (snap_angle 
+    fortyfive_degree
+  )
+  (autoroute_settings
+    (fanout off)
+    (autoroute on)
+    (postroute on)
+    (vias on)
+    (via_costs 50)
+    (plane_via_costs 5)
+    (start_ripup_costs 100)
+    (start_pass_no 1189)
+    (layer_rule F.Cu
+      (active on)
+      (preferred_direction vertical)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 5.0)
+    )
+    (layer_rule B.Cu
+      (active on)
+      (preferred_direction horizontal)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 5.0)
+    )
+  )
+  (rule
+    (width 300.0)
+    (clear 317.6)
+    (clear 150.0 (type smd_to_turn_gap))
+    (clear 79.4 (type smd_smd))
+  )
+  (padstack "Via[0-1]_1600:800_um"
+    (shape
+      (circle F.Cu 1600.0 0.0 0.0)
+    )
+    (shape
+      (circle B.Cu 1600.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (via 
+    "Via[0-1]_1600:800_um" "Via[0-1]_1600:800_um" default
+  )
+  (via 
+    "Via[0-1]_1600:800_um-kicad_default" "Via[0-1]_1600:800_um" "kicad_default"
+  )
+  (via_rule
+    default "Via[0-1]_1600:800_um"
+  )
+  (via_rule
+    "kicad_default" "Via[0-1]_1600:800_um-kicad_default"
+  )
+  (class default
+    (clearance_class default)
+    (via_rule default)
+    (rule
+      (width 300.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class "kicad_default"
+    GND +5V /~RESET "Net-(J1-Pad10C)" /~IEI "Net-(J1-Pad12C)" "Net-(J1-Pad13C)" "Net-(J1-Pad15C)"
+    "Net-(J1-Pad16C)" "Net-(J1-Pad19C)" "Net-(J1-Pad20C)" /~INT "Net-(J1-Pad23C)" "Net-(J1-Pad26C)" /CLK /~WAIT
+    /~BUSRQ "Net-(J1-Pad12A)" "Net-(J1-Pad13A)" "Net-(J1-Pad14A)" "Net-(J1-Pad15A)" "Net-(J1-Pad16A)" "Net-(J1-Pad17A)" "Net-(J1-Pad19A)"
+    "Net-(J1-Pad21A)" "Net-(J1-Pad22A)" "Net-(J1-Pad24A)" "Net-(J1-Pad25A)" "Net-(J1-Pad26A)" /D7 /D6 /D5
+    /D4 /D3 /D2 /D1 /D0 /~RD /~WR /A13
+    /A8 /A9 /A0 /A11 /A1 /A2 /A10 /A3
+    "/Memory Logic/~ROM_CS" /A4 /A5 /A6 /A7 /A12 /A14 /B0
+    /B2 "/Memory Logic/~RAM_CS" /B1 /B3 /~IORQ /~MRQ /~HALT /~M1
+    /A15 /~BankCS "Net-(U10-Pad9)" "/Memory Logic/RomDisable" "Net-(U12-Pad14)" "Net-(C1-Pad1)" "Net-(D1-Pad2)" "Net-(SW1-Pad3)"
+    "Net-(SW1-Pad2)" /RESET "Net-(U7-Pad10)" "Net-(U12-Pad19)" "Net-(U12-Pad18)" "Net-(U12-Pad17)" "Net-(U12-Pad16)" "Net-(U12-Pad15)"
+    /~INTAK "Net-(U7-Pad12)" "Net-(U7-Pad9)" /BD0 /BD7 /BD2 /BA0 /BA3
+    /BA1 /BA8 /BA7 /BD1 /BA11 /BA10 /BA12 /BA15
+    /BD5 /BD6 /BD3 /BD4 /BA2 /BA4 /BA5 /BA6
+    /BA14 /BA13 /BA9 "Net-(U7-Pad7)" "Net-(U7-Pad14)" "Net-(U7-Pad13)" "Net-(U7-Pad11)" "Net-(U8-Pad2)"
+    "Net-(U9-Pad3)" "Net-(U10-Pad12)" "Net-(U10-Pad4)" "Net-(U10-Pad1)" /~DIR "Net-(J1-Pad28A)" "Net-(J1-Pad31A)" "Net-(U4-Pad28)"
+    "Net-(U4-Pad23)" "Net-(D1-Pad4)"
+    (clearance_class "kicad_default")
+    (via_rule kicad_default)
+    (rule
+      (width 300.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+)

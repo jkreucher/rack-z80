@@ -1,0 +1,416 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 2 3
+Title "RackZ80 - Processor Board"
+Date "2021-03-30"
+Rev "1.0"
+Comp "Jannik Kreucher"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L 74xx:74LS32 U?
+U 5 1 61626304
+P 4000 2500
+AR Path="/61171ACF/61626304" Ref="U?"  Part="5" 
+AR Path="/6161CDAA/61626304" Ref="U9"  Part="5" 
+F 0 "U9" H 4230 2546 50  0000 L CNN
+F 1 "74LS32" H 4230 2455 50  0000 L CNN
+F 2 "rackz80_footprints:DIP-14_Socket" H 4000 2500 50  0001 C CNN
+F 3 "http://www.ti.com/lit/gpn/sn74LS32" H 4000 2500 50  0001 C CNN
+	5    4000 2500
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74xx:74LS08 U?
+U 5 1 6162630A
+P 3000 2500
+AR Path="/61171ACF/6162630A" Ref="U?"  Part="5" 
+AR Path="/6161CDAA/6162630A" Ref="U10"  Part="5" 
+F 0 "U10" H 3230 2546 50  0000 L CNN
+F 1 "74LS08" H 3230 2455 50  0000 L CNN
+F 2 "rackz80_footprints:DIP-14_Socket" H 3000 2500 50  0001 C CNN
+F 3 "http://www.ti.com/lit/gpn/sn74LS08" H 3000 2500 50  0001 C CNN
+	5    3000 2500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C2
+U 1 1 62762F5F
+P 3000 4750
+F 0 "C2" H 3115 4796 50  0000 L CNN
+F 1 "100nF" H 3115 4705 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm" H 3038 4600 50  0001 C CNN
+F 3 "~" H 3000 4750 50  0001 C CNN
+	1    3000 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C3
+U 1 1 627639CA
+P 3500 4750
+F 0 "C3" H 3615 4796 50  0000 L CNN
+F 1 "100nF" H 3615 4705 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm" H 3538 4600 50  0001 C CNN
+F 3 "~" H 3500 4750 50  0001 C CNN
+	1    3500 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C4
+U 1 1 6276419B
+P 4000 4750
+F 0 "C4" H 4115 4796 50  0000 L CNN
+F 1 "100nF" H 4115 4705 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm" H 4038 4600 50  0001 C CNN
+F 3 "~" H 4000 4750 50  0001 C CNN
+	1    4000 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C5
+U 1 1 62764389
+P 4500 4750
+F 0 "C5" H 4615 4796 50  0000 L CNN
+F 1 "100nF" H 4615 4705 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm" H 4538 4600 50  0001 C CNN
+F 3 "~" H 4500 4750 50  0001 C CNN
+	1    4500 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C6
+U 1 1 62764EF8
+P 5000 4750
+F 0 "C6" H 5115 4796 50  0000 L CNN
+F 1 "100nF" H 5115 4705 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm" H 5038 4600 50  0001 C CNN
+F 3 "~" H 5000 4750 50  0001 C CNN
+	1    5000 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C7
+U 1 1 6276510A
+P 5500 4750
+F 0 "C7" H 5615 4796 50  0000 L CNN
+F 1 "100nF" H 5615 4705 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm" H 5538 4600 50  0001 C CNN
+F 3 "~" H 5500 4750 50  0001 C CNN
+	1    5500 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C8
+U 1 1 62765114
+P 6000 4750
+F 0 "C8" H 6115 4796 50  0000 L CNN
+F 1 "100nF" H 6115 4705 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm" H 6038 4600 50  0001 C CNN
+F 3 "~" H 6000 4750 50  0001 C CNN
+	1    6000 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR033
+U 1 1 62769B4A
+P 3000 4350
+F 0 "#PWR033" H 3000 4200 50  0001 C CNN
+F 1 "+5V" H 3015 4523 50  0000 C CNN
+F 2 "" H 3000 4350 50  0001 C CNN
+F 3 "" H 3000 4350 50  0001 C CNN
+	1    3000 4350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR034
+U 1 1 6276A440
+P 3000 5150
+F 0 "#PWR034" H 3000 4900 50  0001 C CNN
+F 1 "GND" H 3005 4977 50  0000 C CNN
+F 2 "" H 3000 5150 50  0001 C CNN
+F 3 "" H 3000 5150 50  0001 C CNN
+	1    3000 5150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3000 4350 3000 4500
+Wire Wire Line
+	3000 4900 3000 5000
+Connection ~ 3000 4500
+Wire Wire Line
+	3000 4500 3000 4600
+Connection ~ 3000 5000
+Wire Wire Line
+	3000 5000 3000 5150
+Wire Wire Line
+	3500 4500 3500 4600
+Wire Wire Line
+	3500 4900 3500 5000
+Connection ~ 3500 4500
+Wire Wire Line
+	3500 4500 3000 4500
+Connection ~ 3500 5000
+Wire Wire Line
+	3500 5000 3000 5000
+Wire Wire Line
+	4000 4500 4000 4600
+Wire Wire Line
+	4000 4900 4000 5000
+Connection ~ 4000 4500
+Wire Wire Line
+	4000 4500 3500 4500
+Connection ~ 4000 5000
+Wire Wire Line
+	4000 5000 3500 5000
+Wire Wire Line
+	4500 4500 4500 4600
+Wire Wire Line
+	4500 4900 4500 5000
+Connection ~ 4500 4500
+Wire Wire Line
+	4500 4500 4000 4500
+Connection ~ 4500 5000
+Wire Wire Line
+	4500 5000 4000 5000
+Wire Wire Line
+	5000 4500 5000 4600
+Wire Wire Line
+	5000 4900 5000 5000
+Connection ~ 5000 4500
+Wire Wire Line
+	5000 4500 4500 4500
+Connection ~ 5000 5000
+Wire Wire Line
+	5000 5000 4500 5000
+Wire Wire Line
+	5500 4500 5500 4600
+Wire Wire Line
+	5500 4900 5500 5000
+Connection ~ 5500 4500
+Wire Wire Line
+	5500 4500 5000 4500
+Connection ~ 5500 5000
+Wire Wire Line
+	5500 5000 5000 5000
+Wire Wire Line
+	6000 4500 6000 4600
+Wire Wire Line
+	6000 4900 6000 5000
+Wire Wire Line
+	6000 4500 5500 4500
+Wire Wire Line
+	6000 5000 5500 5000
+$Comp
+L power:+5V #PWR031
+U 1 1 60BBFC2C
+P 3000 1800
+F 0 "#PWR031" H 3000 1650 50  0001 C CNN
+F 1 "+5V" H 3015 1973 50  0000 C CNN
+F 2 "" H 3000 1800 50  0001 C CNN
+F 3 "" H 3000 1800 50  0001 C CNN
+	1    3000 1800
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR032
+U 1 1 60BC65F6
+P 3000 3200
+F 0 "#PWR032" H 3000 2950 50  0001 C CNN
+F 1 "GND" H 3005 3027 50  0000 C CNN
+F 2 "" H 3000 3200 50  0001 C CNN
+F 3 "" H 3000 3200 50  0001 C CNN
+	1    3000 3200
+	1    0    0    -1  
+$EndComp
+Wire Notes Line
+	2500 4000 2500 5500
+Wire Wire Line
+	3000 1800 3000 1900
+$Comp
+L 74xx:74LS14 U8
+U 7 1 61A90375
+P 5000 2500
+F 0 "U8" H 5230 2546 50  0000 L CNN
+F 1 "74LS14" H 5230 2455 50  0000 L CNN
+F 2 "rackz80_footprints:DIP-14_Socket" H 5000 2500 50  0001 C CNN
+F 3 "http://www.ti.com/lit/gpn/sn74LS14" H 5000 2500 50  0001 C CNN
+	7    5000 2500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3000 3000 3000 3100
+Connection ~ 3000 1900
+Wire Wire Line
+	3000 1900 3000 2000
+Connection ~ 3000 3100
+Wire Wire Line
+	3000 3100 3000 3200
+Wire Notes Line
+	2500 1500 2500 3500
+Wire Wire Line
+	5000 1900 5000 2000
+Wire Wire Line
+	3000 1900 4000 1900
+Wire Wire Line
+	5000 3100 5000 3000
+Wire Wire Line
+	3000 3100 4000 3100
+Wire Wire Line
+	4000 3000 4000 3100
+Connection ~ 4000 3100
+Wire Wire Line
+	4000 3100 5000 3100
+Wire Wire Line
+	4000 2000 4000 1900
+Connection ~ 4000 1900
+Wire Wire Line
+	4000 1900 5000 1900
+Text Notes 2500 4000 0    50   ~ 0
+Bypass Capacitors
+Text Notes 2500 1500 0    50   ~ 0
+Logic IC Power
+$Comp
+L Device:C C9
+U 1 1 60C87B14
+P 6500 4750
+F 0 "C9" H 6615 4796 50  0000 L CNN
+F 1 "100nF" H 6615 4705 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm" H 6538 4600 50  0001 C CNN
+F 3 "~" H 6500 4750 50  0001 C CNN
+	1    6500 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C10
+U 1 1 60C87D74
+P 7000 4750
+F 0 "C10" H 7115 4796 50  0000 L CNN
+F 1 "100nF" H 7115 4705 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm" H 7038 4600 50  0001 C CNN
+F 3 "~" H 7000 4750 50  0001 C CNN
+	1    7000 4750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6500 4500 6500 4600
+Wire Wire Line
+	7000 4500 7000 4600
+Wire Wire Line
+	6000 4500 6500 4500
+Connection ~ 6000 4500
+Connection ~ 6500 4500
+Wire Wire Line
+	6500 4500 7000 4500
+Wire Wire Line
+	6000 5000 6500 5000
+Wire Wire Line
+	7000 5000 7000 4900
+Connection ~ 6000 5000
+Wire Wire Line
+	6500 4900 6500 5000
+Connection ~ 6500 5000
+Wire Wire Line
+	6500 5000 7000 5000
+$Comp
+L Device:C C11
+U 1 1 61869511
+P 7500 4750
+F 0 "C11" H 7615 4796 50  0000 L CNN
+F 1 "100nF" H 7615 4705 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm" H 7538 4600 50  0001 C CNN
+F 3 "~" H 7500 4750 50  0001 C CNN
+	1    7500 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C12
+U 1 1 61869751
+P 8000 4750
+F 0 "C12" H 8115 4796 50  0000 L CNN
+F 1 "100nF" H 8115 4705 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm" H 8038 4600 50  0001 C CNN
+F 3 "~" H 8000 4750 50  0001 C CNN
+	1    8000 4750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7500 4500 7500 4600
+Wire Wire Line
+	8000 4500 8000 4600
+Wire Wire Line
+	8000 5000 8000 4900
+Wire Wire Line
+	7500 4900 7500 5000
+Wire Wire Line
+	7000 4500 7500 4500
+Connection ~ 7000 4500
+Connection ~ 7500 4500
+Wire Wire Line
+	7500 4500 8000 4500
+Wire Wire Line
+	7000 5000 7500 5000
+Connection ~ 7000 5000
+Connection ~ 7500 5000
+Wire Wire Line
+	7500 5000 8000 5000
+$Comp
+L Device:C C13
+U 1 1 61876545
+P 8500 4750
+F 0 "C13" H 8615 4796 50  0000 L CNN
+F 1 "100nF" H 8615 4705 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm" H 8538 4600 50  0001 C CNN
+F 3 "~" H 8500 4750 50  0001 C CNN
+	1    8500 4750
+	1    0    0    -1  
+$EndComp
+Wire Notes Line
+	9000 4000 9000 5500
+Wire Notes Line
+	2500 5500 9000 5500
+Wire Notes Line
+	2500 4000 9000 4000
+Wire Wire Line
+	8000 4500 8500 4500
+Wire Wire Line
+	8500 4500 8500 4600
+Connection ~ 8000 4500
+Wire Wire Line
+	8000 5000 8500 5000
+Wire Wire Line
+	8500 5000 8500 4900
+Connection ~ 8000 5000
+$Comp
+L 74xx:74LS08 U11
+U 5 1 61885529
+P 6000 2500
+F 0 "U11" H 6230 2546 50  0000 L CNN
+F 1 "74LS08" H 6230 2455 50  0000 L CNN
+F 2 "rackz80_footprints:DIP-14_Socket" H 6000 2500 50  0001 C CNN
+F 3 "http://www.ti.com/lit/gpn/sn74LS08" H 6000 2500 50  0001 C CNN
+	5    6000 2500
+	1    0    0    -1  
+$EndComp
+Wire Notes Line
+	6750 1500 6750 3500
+Wire Notes Line
+	2500 3500 6750 3500
+Wire Notes Line
+	2500 1500 6750 1500
+Wire Wire Line
+	5000 1900 6000 1900
+Wire Wire Line
+	6000 1900 6000 2000
+Connection ~ 5000 1900
+Wire Wire Line
+	5000 3100 6000 3100
+Wire Wire Line
+	6000 3100 6000 3000
+Connection ~ 5000 3100
+$EndSCHEMATC

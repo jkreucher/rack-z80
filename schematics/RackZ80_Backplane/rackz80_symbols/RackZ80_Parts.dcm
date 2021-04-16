@@ -1,0 +1,30 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP 16C550
+D Asynchronous Communications Element
+K UART
+F https://cdn-reichelt.de/documents/datenblatt/A300/TL16C550B%23TEX.pdf
+$ENDCMP
+#
+$CMP 628512
+D 512Kx8 bit Low Power full CMOS Static RAM
+K SRAM 512k
+F https://cdn-reichelt.de/documents/datenblatt/A200/628512-55%24%23SAM.pdf
+$ENDCMP
+#
+$CMP ECB_Kontron
+D DIN 41612 ECB Bus Kontron
+F http://2jo.de/robotron/Kontron/KONz80.pdf
+$ENDCMP
+#
+$CMP IEEE-1284
+D PC Parallel port
+K parallel
+$ENDCMP
+#
+$CMP Z80CPU
+D ZiLog Z80 Processor
+F http://datasheets.chipdb.org/Mostek/3880.pdf
+$ENDCMP
+#
+#End Doc Library
