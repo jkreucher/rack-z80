@@ -4,7 +4,7 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 3 3
-Title "Project Rack Z80 - RS232"
+Title "Project RackZ80 - RS232"
 Date "2021-04-09"
 Rev "1.0"
 Comp "Jannik Kreucher"
@@ -99,8 +99,6 @@ $EndComp
 Wire Wire Line
 	2250 4150 2250 4200
 Wire Wire Line
-	2850 4200 2850 3950
-Wire Wire Line
 	2850 3550 2750 3550
 $Comp
 L power:+5V #PWR?
@@ -125,11 +123,6 @@ Wire Wire Line
 Connection ~ 2850 3150
 Wire Wire Line
 	2750 3750 3150 3750
-Wire Wire Line
-	2750 3950 2850 3950
-Connection ~ 2850 3950
-Wire Wire Line
-	2850 3950 2850 3550
 NoConn ~ 1750 3950
 Wire Wire Line
 	1750 3250 1500 3250
@@ -622,8 +615,6 @@ $EndComp
 Wire Wire Line
 	5250 4150 5250 4200
 Wire Wire Line
-	5850 4200 5850 3950
-Wire Wire Line
 	5850 3550 5750 3550
 $Comp
 L power:+5V #PWR?
@@ -648,11 +639,6 @@ Wire Wire Line
 Connection ~ 5850 3150
 Wire Wire Line
 	5750 3750 6150 3750
-Wire Wire Line
-	5750 3950 5850 3950
-Connection ~ 5850 3950
-Wire Wire Line
-	5850 3950 5850 3550
 NoConn ~ 4750 3950
 Wire Wire Line
 	4750 3250 4500 3250
@@ -1170,6 +1156,18 @@ Wire Wire Line
 	2750 2450 3150 2450
 Wire Wire Line
 	3050 2850 2750 2850
+Wire Wire Line
+	2850 3550 2850 4200
+Text HLabel 3150 3950 2    50   Input ~ 0
+RESET
+Wire Wire Line
+	2750 3950 3150 3950
+Text Label 3050 3950 2    50   ~ 0
+RST
+Wire Wire Line
+	5850 3550 5850 4200
+Wire Wire Line
+	5750 3950 6050 3950
 Wire Bus Line
 	6250 800  6250 3350
 Wire Bus Line
@@ -1178,4 +1176,6 @@ Wire Bus Line
 	3150 650  3150 2250
 Wire Bus Line
 	6150 650  6150 2250
+Text Label 6050 3950 2    50   ~ 0
+RST
 $EndSCHEMATC

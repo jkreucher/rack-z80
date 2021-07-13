@@ -4,7 +4,7 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 2 3
-Title "Project Rack Z80 - RS232"
+Title "Project RackZ80 - RS232"
 Date "2021-04-09"
 Rev "1.0"
 Comp "Jannik Kreucher"
@@ -97,17 +97,6 @@ F 1 "GND" H 4605 5477 50  0000 C CNN
 F 2 "" H 4600 5650 50  0001 C CNN
 F 3 "" H 4600 5650 50  0001 C CNN
 	1    4600 5650
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR022
-U 1 1 609BADC9
-P 5600 5650
-F 0 "#PWR022" H 5600 5400 50  0001 C CNN
-F 1 "GND" H 5605 5477 50  0000 C CNN
-F 2 "" H 5600 5650 50  0001 C CNN
-F 3 "" H 5600 5650 50  0001 C CNN
-	1    5600 5650
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -232,8 +221,6 @@ Wire Wire Line
 	3850 4400 3850 4500
 Wire Wire Line
 	6000 4150 6000 4200
-Wire Wire Line
-	5600 5300 5600 5650
 Wire Wire Line
 	6000 5500 6000 5650
 $Comp
@@ -423,8 +410,12 @@ Wire Wire Line
 	6450 2400 6400 2400
 Wire Wire Line
 	6400 2600 6450 2600
+Wire Wire Line
+	5600 5300 5450 5300
 Wire Bus Line
 	6700 1000 6700 2500
 Wire Bus Line
 	6700 3500 6700 5100
+Text Label 5450 5300 0    50   ~ 0
++5V
 $EndSCHEMATC

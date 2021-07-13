@@ -4,7 +4,7 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 3
-Title "Project Rack Z80 - RS232"
+Title "Project RackZ80 - RS232"
 Date "2021-04-09"
 Rev "1.0"
 Comp "Jannik Kreucher"
@@ -251,9 +251,7 @@ F 3 "" H 8450 4600 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text Label 7650 2800 0    50   ~ 0
-~RD
-Text Label 8850 2800 2    50   ~ 0
-~CS
+~WR
 $Comp
 L power:+5V #PWR07
 U 1 1 60795B3A
@@ -283,43 +281,41 @@ Wire Wire Line
 $Comp
 L Transistor_BJT:BC547 Q1
 U 1 1 60763CE5
-P 6000 5100
-F 0 "Q1" H 6191 5146 50  0000 L CNN
-F 1 "BC547" H 6191 5055 50  0000 L CNN
-F 2 "Package_TO_SOT_THT:TO-92S_Wide" H 6200 5025 50  0001 L CIN
-F 3 "https://www.onsemi.com/pub/Collateral/BC550-D.pdf" H 6000 5100 50  0001 L CNN
-	1    6000 5100
+P 6000 4950
+F 0 "Q1" H 6191 4996 50  0000 L CNN
+F 1 "BC547" H 6191 4905 50  0000 L CNN
+F 2 "Package_TO_SOT_THT:TO-92S_Wide" H 6200 4875 50  0001 L CIN
+F 3 "https://www.onsemi.com/pub/Collateral/BC550-D.pdf" H 6000 4950 50  0001 L CNN
+	1    6000 4950
 	1    0    0    -1  
 $EndComp
 $Comp
 L Device:R R1
 U 1 1 60764889
-P 5600 5100
-F 0 "R1" V 5393 5100 50  0000 C CNN
-F 1 "1k" V 5484 5100 50  0000 C CNN
-F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 5530 5100 50  0001 C CNN
-F 3 "~" H 5600 5100 50  0001 C CNN
-	1    5600 5100
+P 5600 4950
+F 0 "R1" V 5393 4950 50  0000 C CNN
+F 1 "1k" V 5484 4950 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 5530 4950 50  0001 C CNN
+F 3 "~" H 5600 4950 50  0001 C CNN
+	1    5600 4950
 	0    1    1    0   
 $EndComp
 $Comp
 L power:GND #PWR013
 U 1 1 60765E35
-P 6100 5350
-F 0 "#PWR013" H 6100 5100 50  0001 C CNN
-F 1 "GND" H 6105 5177 50  0000 C CNN
-F 2 "" H 6100 5350 50  0001 C CNN
-F 3 "" H 6100 5350 50  0001 C CNN
-	1    6100 5350
+P 6100 5200
+F 0 "#PWR013" H 6100 4950 50  0001 C CNN
+F 1 "GND" H 6105 5027 50  0000 C CNN
+F 2 "" H 6100 5200 50  0001 C CNN
+F 3 "" H 6100 5200 50  0001 C CNN
+	1    6100 5200
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6100 5300 6100 5350
+	6100 5150 6100 5200
 Wire Wire Line
-	5800 5100 5750 5100
-Wire Wire Line
-	6100 4900 6100 4700
-Text Label 6100 4700 3    50   ~ 0
+	5800 4950 5750 4950
+Text Label 6100 4600 3    50   ~ 0
 ~INT
 Wire Wire Line
 	10500 3700 10800 3700
@@ -332,53 +328,53 @@ IEO
 $Comp
 L Oscillator:CXO_DIP14 X1
 U 1 1 609D020E
-P 2050 1750
-F 0 "X1" H 2300 2150 50  0000 L CNN
-F 1 "1.8432MHz" H 2150 2050 50  0000 L CNN
-F 2 "rackz80_footprints:DIP-14_Oscillator_Socket" H 2500 1400 50  0001 C CNN
-F 3 "http://cdn-reichelt.de/documents/datenblatt/B400/OSZI.pdf" H 1950 1750 50  0001 C CNN
-	1    2050 1750
+P 1550 1750
+F 0 "X1" H 1800 2150 50  0000 L CNN
+F 1 "1.8432MHz" H 1650 2050 50  0000 L CNN
+F 2 "rackz80_footprints:DIP-14_Oscillator_Socket" H 2000 1400 50  0001 C CNN
+F 3 "http://cdn-reichelt.de/documents/datenblatt/B400/OSZI.pdf" H 1450 1750 50  0001 C CNN
+	1    1550 1750
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:GND #PWR05
 U 1 1 609EB9D9
-P 2050 2100
-F 0 "#PWR05" H 2050 1850 50  0001 C CNN
-F 1 "GND" H 2055 1927 50  0000 C CNN
-F 2 "" H 2050 2100 50  0001 C CNN
-F 3 "" H 2050 2100 50  0001 C CNN
-	1    2050 2100
+P 1550 2100
+F 0 "#PWR05" H 1550 1850 50  0001 C CNN
+F 1 "GND" H 1555 1927 50  0000 C CNN
+F 2 "" H 1550 2100 50  0001 C CNN
+F 3 "" H 1550 2100 50  0001 C CNN
+	1    1550 2100
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:+5V #PWR02
 U 1 1 609EC353
-P 2050 1400
-F 0 "#PWR02" H 2050 1250 50  0001 C CNN
-F 1 "+5V" H 2065 1573 50  0000 C CNN
-F 2 "" H 2050 1400 50  0001 C CNN
-F 3 "" H 2050 1400 50  0001 C CNN
-	1    2050 1400
+P 1550 1400
+F 0 "#PWR02" H 1550 1250 50  0001 C CNN
+F 1 "+5V" H 1565 1573 50  0000 C CNN
+F 2 "" H 1550 1400 50  0001 C CNN
+F 3 "" H 1550 1400 50  0001 C CNN
+	1    1550 1400
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:+5V #PWR01
 U 1 1 609ECDEA
-P 1650 1400
-F 0 "#PWR01" H 1650 1250 50  0001 C CNN
-F 1 "+5V" H 1665 1573 50  0000 C CNN
-F 2 "" H 1650 1400 50  0001 C CNN
-F 3 "" H 1650 1400 50  0001 C CNN
-	1    1650 1400
+P 1150 1400
+F 0 "#PWR01" H 1150 1250 50  0001 C CNN
+F 1 "+5V" H 1165 1573 50  0000 C CNN
+F 2 "" H 1150 1400 50  0001 C CNN
+F 3 "" H 1150 1400 50  0001 C CNN
+	1    1150 1400
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1650 1400 1650 1750
+	1150 1400 1150 1750
 Wire Wire Line
-	2050 1400 2050 1450
+	1550 1400 1550 1450
 Wire Wire Line
-	2050 2050 2050 2100
+	1550 2050 1550 2100
 Wire Notes Line
 	7250 1000 7250 6000
 Wire Notes Line
@@ -388,7 +384,7 @@ Wire Notes Line
 Wire Notes Line
 	11000 1000 7250 1000
 Text Notes 1000 2750 0    50   ~ 0
-Chip Select Logic    CS1: 0-7, CS2: 8-F
+Chip Select & Data Bus
 $Comp
 L power:GND #PWR012
 U 1 1 60E3FC52
@@ -415,7 +411,6 @@ Wire Wire Line
 	9100 4500 9100 4750
 Wire Wire Line
 	8300 4500 8300 4750
-NoConn ~ 10500 3500
 Text Label 1100 5050 0    50   ~ 0
 ~IORQ
 Text Label 1100 4850 0    50   ~ 0
@@ -427,7 +422,7 @@ Wire Notes Line
 Wire Notes Line
 	3250 2500 1000 2500
 Text Notes 1000 1000 0    50   ~ 0
-UART Clock
+UART Clock & Reset
 Text Label 6100 1450 0    50   ~ 0
 D[0..7]
 $Comp
@@ -695,8 +690,6 @@ Wire Notes Line
 Wire Notes Line
 	6500 1000 3750 1000
 Wire Wire Line
-	3000 1750 2350 1750
-Wire Wire Line
 	9100 3600 9500 3600
 Wire Wire Line
 	9100 3700 9500 3700
@@ -787,31 +780,29 @@ IEO
 $Comp
 L 74xx:74LS02 U?
 U 1 1 608B12FE
-P 2200 3200
+P 2400 3400
 AR Path="/608E987F/608B12FE" Ref="U?"  Part="1" 
 AR Path="/608B12FE" Ref="U2"  Part="1" 
-F 0 "U2" H 2200 3525 50  0000 C CNN
-F 1 "74LS02" H 2200 3434 50  0000 C CNN
-F 2 "rackz80_footprints:DIP-14_Socket" H 2200 3200 50  0001 C CNN
-F 3 "http://www.ti.com/lit/gpn/sn74ls02" H 2200 3200 50  0001 C CNN
-	1    2200 3200
-	1    0    0    -1  
+F 0 "U2" H 2400 3725 50  0000 C CNN
+F 1 "74LS02" H 2400 3634 50  0000 C CNN
+F 2 "rackz80_footprints:DIP-14_Socket" H 2400 3400 50  0001 C CNN
+F 3 "http://www.ti.com/lit/gpn/sn74ls02" H 2400 3400 50  0001 C CNN
+	1    2400 3400
+	-1   0    0    -1  
 $EndComp
 $Comp
 L 74xx:74LS02 U?
 U 2 1 608B1304
-P 1700 3800
+P 2700 2200
 AR Path="/608E987F/608B1304" Ref="U?"  Part="2" 
 AR Path="/608B1304" Ref="U2"  Part="2" 
-F 0 "U2" H 1700 4125 50  0000 C CNN
-F 1 "74LS02" H 1700 4034 50  0000 C CNN
-F 2 "rackz80_footprints:DIP-14_Socket" H 1700 3800 50  0001 C CNN
-F 3 "http://www.ti.com/lit/gpn/sn74ls02" H 1700 3800 50  0001 C CNN
-	2    1700 3800
+F 0 "U2" H 2700 2525 50  0000 C CNN
+F 1 "74LS02" H 2700 2434 50  0000 C CNN
+F 2 "rackz80_footprints:DIP-14_Socket" H 2700 2200 50  0001 C CNN
+F 3 "http://www.ti.com/lit/gpn/sn74ls02" H 2700 2200 50  0001 C CNN
+	2    2700 2200
 	1    0    0    -1  
 $EndComp
-Text Label 1500 3100 0    50   ~ 0
-~CS
 $Comp
 L 74xx:74LS02 U?
 U 3 1 608B130E
@@ -827,8 +818,6 @@ F 3 "http://www.ti.com/lit/gpn/sn74ls02" H 1700 5500 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	4800 5400 5100 5400
-Text Label 4000 3500 0    50   ~ 0
-~CS
 Wire Wire Line
 	4500 1950 4000 1950
 Wire Wire Line
@@ -846,10 +835,11 @@ F2 "D[0..7]" B R 6000 1450 50
 F3 "CLK" I L 4500 1450 50 
 F4 "~RD" I R 6000 1950 50 
 F5 "~WR" I R 6000 2050 50 
-F6 "CS" I L 4500 1650 50 
+F6 "CS" I L 4500 1750 50 
 F7 "INT1" O L 4500 1950 50 
 F8 "INT2" O L 4500 2050 50 
 F9 "A[0..7]" B R 6000 1650 50 
+F10 "RESET" I L 4500 1600 50 
 $EndSheet
 Wire Notes Line
 	1000 2750 3250 2750
@@ -884,13 +874,7 @@ Wire Notes Line
 Wire Notes Line
 	1000 7500 6500 7500
 Wire Wire Line
-	4500 1450 3000 1450
-Wire Wire Line
-	3000 1450 3000 1750
-Wire Wire Line
-	1650 1750 1750 1750
-Text Label 3000 3200 0    50   ~ 0
-CS
+	1150 1750 1250 1750
 Wire Wire Line
 	1100 4850 1400 4850
 Wire Wire Line
@@ -925,17 +909,6 @@ Text Label 1100 5400 0    50   ~ 0
 IEI
 $Comp
 L 74xx:74LS32 U3
-U 4 1 60F55A22
-P 2700 3800
-F 0 "U3" H 2700 4125 50  0000 C CNN
-F 1 "74LS32" H 2700 4034 50  0000 C CNN
-F 2 "rackz80_footprints:DIP-14_Socket" H 2700 3800 50  0001 C CNN
-F 3 "http://www.ti.com/lit/gpn/sn74LS32" H 2700 3800 50  0001 C CNN
-	4    2700 3800
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74xx:74LS32 U3
 U 3 1 60F0E280
 P 3800 4950
 F 0 "U3" H 3800 5275 50  0000 C CNN
@@ -946,58 +919,14 @@ F 3 "http://www.ti.com/lit/gpn/sn74LS32" H 3800 4950 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2000 6150 3000 6150
+	2000 6150 2450 6150
 Wire Wire Line
-	2000 7350 3000 7350
-Wire Wire Line
-	1500 3100 1850 3100
+	2000 7350 2450 7350
 Wire Wire Line
 	1100 5400 1400 5400
 Wire Wire Line
 	1400 5600 1400 5400
 Connection ~ 1400 5400
-$Comp
-L power:GND #PWR09
-U 1 1 6090135F
-P 2300 4000
-F 0 "#PWR09" H 2300 3750 50  0001 C CNN
-F 1 "GND" H 2305 3827 50  0000 C CNN
-F 2 "" H 2300 4000 50  0001 C CNN
-F 3 "" H 2300 4000 50  0001 C CNN
-	1    2300 4000
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	2300 4000 2300 3900
-Wire Wire Line
-	2300 3700 2400 3700
-Wire Wire Line
-	2400 3900 2300 3900
-Connection ~ 2300 3900
-Wire Wire Line
-	2300 3900 2300 3700
-NoConn ~ 3000 3800
-$Comp
-L power:GND #PWR08
-U 1 1 6097DDD4
-P 1300 4000
-F 0 "#PWR08" H 1300 3750 50  0001 C CNN
-F 1 "GND" H 1305 3827 50  0000 C CNN
-F 2 "" H 1300 4000 50  0001 C CNN
-F 3 "" H 1300 4000 50  0001 C CNN
-	1    1300 4000
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	1300 4000 1300 3900
-Wire Wire Line
-	1300 3700 1400 3700
-Wire Wire Line
-	1400 3900 1300 3900
-Connection ~ 1300 3900
-Wire Wire Line
-	1300 3900 1300 3700
-NoConn ~ 2000 3800
 Text Label 3000 5500 2    50   ~ 0
 ~IntEn
 Wire Wire Line
@@ -1007,22 +936,14 @@ Wire Wire Line
 Wire Wire Line
 	2700 5050 3000 5050
 Wire Wire Line
-	5350 4950 5350 5100
-Wire Wire Line
-	5350 5100 5450 5100
-Wire Wire Line
 	4100 4950 4150 4950
 Wire Wire Line
 	4200 5300 4150 5300
 Wire Wire Line
 	4150 5300 4150 4950
 Connection ~ 4150 4950
-Wire Wire Line
-	4150 4950 5350 4950
 Text Label 5100 4950 2    50   ~ 0
 INT
-Wire Wire Line
-	2700 4400 2700 5050
 Connection ~ 2700 5050
 Wire Wire Line
 	2000 5500 2050 5500
@@ -1035,20 +956,6 @@ Wire Wire Line
 	2050 5500 4200 5500
 Text Label 3300 5500 0    50   ~ 0
 IntDisable
-Wire Wire Line
-	4000 3500 4500 3500
-Wire Wire Line
-	4000 3800 4000 4400
-Wire Wire Line
-	4000 4400 2700 4400
-Wire Wire Line
-	4000 3800 4500 3800
-Wire Wire Line
-	4500 1650 3500 1650
-Wire Wire Line
-	3500 1650 3500 3200
-Wire Wire Line
-	2500 3200 3500 3200
 Wire Bus Line
 	7350 1650 7000 1650
 Wire Bus Line
@@ -1099,13 +1006,6 @@ Text Label 6300 3700 2    50   ~ 0
 ~IORQ
 Text Label 6300 3800 2    50   ~ 0
 ~M1
-Wire Wire Line
-	1850 3100 1850 3300
-Connection ~ 1850 3100
-Wire Wire Line
-	1850 3100 1900 3100
-Wire Wire Line
-	1850 3300 1900 3300
 Wire Bus Line
 	7000 1650 7000 3400
 Connection ~ 7000 1650
@@ -1120,6 +1020,105 @@ Wire Bus Line
 	6000 3200 6750 3200
 Wire Bus Line
 	6000 1450 6750 1450
+Wire Wire Line
+	2400 2300 2400 2100
+Connection ~ 2400 2100
+Text Label 1900 3400 0    50   ~ 0
+CS
+Text Label 4000 3500 0    50   ~ 0
+~CS
+Wire Wire Line
+	2100 2100 2400 2100
+Text Label 2100 2100 0    50   ~ 0
+~RESET
+Wire Wire Line
+	10500 3500 10800 3500
+Text Label 10800 3500 2    50   ~ 0
+~RESET
+Text Label 8850 2800 2    50   ~ 0
+~BUS
+Wire Wire Line
+	6100 4600 6100 4750
+Wire Wire Line
+	4150 4950 5450 4950
+$Comp
+L 74xx:74LS08 U11
+U 5 1 60883ED3
+P 2450 6750
+F 0 "U11" H 2450 6800 50  0000 C CNN
+F 1 "74LS08" H 2450 6700 50  0000 C CNN
+F 2 "rackz80_footprints:DIP-14_Socket" H 2450 6750 50  0001 C CNN
+F 3 "http://www.ti.com/lit/gpn/sn74LS08" H 2450 6750 50  0001 C CNN
+	5    2450 6750
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74xx:74LS08 U11
+U 1 1 608AFADC
+P 2400 4000
+F 0 "U11" H 2400 4325 50  0000 C CNN
+F 1 "74LS08" H 2400 4234 50  0000 C CNN
+F 2 "rackz80_footprints:DIP-14_Socket" H 2400 4000 50  0001 C CNN
+F 3 "http://www.ti.com/lit/gpn/sn74LS08" H 2400 4000 50  0001 C CNN
+	1    2400 4000
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	4500 1600 3150 1600
+Wire Wire Line
+	3150 1600 3150 2200
+Wire Wire Line
+	3150 2200 3000 2200
+Wire Wire Line
+	4500 1750 3500 1750
+Wire Wire Line
+	3500 1750 3500 2850
+Text Label 1900 4000 0    50   ~ 0
+~BUS
+Wire Wire Line
+	1900 4000 2100 4000
+Wire Wire Line
+	1850 1750 2500 1750
+Wire Wire Line
+	2500 1750 2500 1450
+Wire Wire Line
+	2500 1450 4500 1450
+Wire Wire Line
+	3500 2850 1500 2850
+Wire Wire Line
+	1500 2850 1500 3400
+Wire Wire Line
+	1500 3400 2100 3400
+Text Notes 1050 4100 0    50   ~ 0
+ECB Data Enable.\nEnable when when\nIntAck or CS active.
+Wire Wire Line
+	2700 3500 4500 3500
+Wire Wire Line
+	2700 3300 2700 3500
+Connection ~ 2700 3500
+Wire Wire Line
+	2700 3900 2700 3500
+Wire Wire Line
+	2700 4100 2700 5050
+Wire Wire Line
+	3000 3800 3000 4100
+Wire Wire Line
+	3000 4100 2700 4100
+Wire Wire Line
+	3000 3800 4500 3800
+Connection ~ 2700 4100
+Text Label 4000 3800 0    50   ~ 0
+~IntAck
+Wire Wire Line
+	2450 6250 2450 6150
+Connection ~ 2450 6150
+Wire Wire Line
+	2450 6150 3000 6150
+Wire Wire Line
+	2450 7250 2450 7350
+Connection ~ 2450 7350
+Wire Wire Line
+	2450 7350 3000 7350
 Wire Bus Line
 	7550 1450 7550 2600
 Wire Bus Line
