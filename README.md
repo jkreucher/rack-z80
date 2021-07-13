@@ -1,5 +1,6 @@
 # Rack Z80 Computer
 
+![PCB](pictures/processor_serial_backplane.jpg)
 Copyright 2021 Jannik Kreucher
 
 **NOTE: This Project is still work in progress and not working at this point !**
