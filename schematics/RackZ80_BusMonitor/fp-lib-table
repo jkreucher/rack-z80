@@ -1,3 +1,0 @@
-(fp_lib_table
-  (lib (name rackz80_footprints)(type KiCad)(uri ${KIPRJMOD}/rackz80_footprints.pretty)(options "")(descr ""))
-)
