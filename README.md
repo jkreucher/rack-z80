@@ -8,6 +8,7 @@ Copyright 2021 Jannik Kreucher
 ## Table of Contents
  - [About The Project](#about-the-project)
  - [Folder Structure](#folder-structure)
+ - [Modules](#modules)
   
 
 ## About The Project
@@ -23,3 +24,9 @@ The project is divided into following directories:
  - tools
 
 [`schematics/`](schematics) contains all the PCBs I designed for this project. Each board has its own README file for way more detailed information. [`code/`](code) contains the source code for the Z80 computer itself. The directory [`tools/`](tools) contains everything needed to compile, assemble source code and other software for this project.
+
+
+## Modules
+To get more information about one module click on the link.
+ - [Processor Board](schematics/RackZ80_Processor)
+ - [RS232 Serial Interface](schematics/RackZ80_RS232)
