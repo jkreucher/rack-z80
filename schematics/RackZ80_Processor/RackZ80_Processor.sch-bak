@@ -2058,7 +2058,7 @@ NoConn ~ 10500 4400
 Wire Wire Line
 	1350 6400 1050 6400
 Text Notes 700  7650 0    50   ~ 0
-~M1~ is low during Interrupt vector read.\n~RD~ is low when reading from I/O device.
+~M1~ is low during Interrupt vector read.\n~RD~ is low when reading from I/O device.\nBut input only when reading from I/O.
 $Comp
 L 74xx:74LS32 U9
 U 4 1 611B1CA5
@@ -2083,10 +2083,10 @@ Wire Wire Line
 Wire Wire Line
 	1950 7200 2250 7200
 $Comp
-L power:GND #PWR?
+L power:GND #PWR0103
 U 1 1 61215686
 P 8500 2350
-F 0 "#PWR?" H 8500 2100 50  0001 C CNN
+F 0 "#PWR0103" H 8500 2100 50  0001 C CNN
 F 1 "GND" H 8505 2177 50  0000 C CNN
 F 2 "" H 8500 2350 50  0001 C CNN
 F 3 "" H 8500 2350 50  0001 C CNN
