@@ -8,7 +8,7 @@ reset:
     jp init
 
 ; Interrupt Vectors
-.org 0x0010
+.org 0x0004
 
 
 ; Code
@@ -31,7 +31,6 @@ init:
 ; segment order for linker
 .area   _HOME
 .area   _CODE
-
+.area	_BSS
 .area   _DATA
-
-.area   _CODE
+.area   _HEAP
