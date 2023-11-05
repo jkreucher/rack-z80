@@ -1,3 +1,5 @@
 (sym_lib_table
-  (lib (name RackZ80_Parts)(type Legacy)(uri ${KIPRJMOD}/rackz80_symbols/RackZ80_Parts.lib)(options "")(descr ""))
+  (version 7)
+  (lib (name "RackZ80_Parts")(type "Legacy")(uri "${KIPRJMOD}/rackz80_symbols/RackZ80_Parts.lib")(options "")(descr ""))
+  (lib (name "RackZ80_Processor-rescue")(type "KiCad")(uri "${KIPRJMOD}/RackZ80_Processor-rescue.kicad_sym")(options "")(descr ""))
 )
