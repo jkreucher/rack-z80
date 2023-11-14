@@ -1,0 +1,21 @@
+- block 0: map page
+	- 0x00 free
+	- 0x01 eof
+	- other: pointer to next block
+- block 1: root dir
+
+- 256bytes per block
+
+
+- root
+	- 
+
+- entry (32 bytes)
+	- type: 0-dir 1-file 2-executable (1 byte)
+	- name: (16 bytes)
+	- start block (1 byte)
+	- size (2 bytes)
+	- date (8 bytes)
+
+- dir points to dir block
+	- each dir block contains up to 8 files/dirs

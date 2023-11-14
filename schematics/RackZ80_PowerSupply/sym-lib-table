@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "rackz80-symbols")(type "KiCad")(uri "${KIPRJMOD}/rackz80-symbols.kicad_sym")(options "")(descr ""))
+)
