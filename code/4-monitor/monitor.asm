@@ -11,8 +11,11 @@ PTR_ARGC		.equ	0x8030
 .org 0x0000
 init:
 	di
+	; set upper ram page
+	;ld a, 0x00
+	;out (PORT_MEMPAGE), a
 	; cpu init
-	ld sp, 0x7FFF
+	ld sp, 0xFFFF
 	ld a, 0x00
 	ld i, a
 	im 2
@@ -279,7 +282,14 @@ _cmd_help_loop:
 	sbc hl, de
 	add hl, de
 	ret z
-	; print string
+	; print command name
+	call uart1_puts
+	; print space
+	ld a, ' '
+	call uart1_putc
+	call uart1_putc
+	; print description
+	inc hl
 	call uart1_puts
 	call uart1_newline
 	; next index
@@ -402,6 +412,58 @@ cmd_page:
 	; write page id
 	out (PORT_MEMPAGE), a
 	ret
+
+
+
+; command: load bytes to 0x0000
+cmd_load:
+	; switch upper 32k to page 0
+	ld a, 0x00
+	out (PORT_MEMPAGE), a
+	; set stackpointer (since page was changed)
+	ld sp, 0xFFFF
+	; page 0 start address
+	ld hl, 0x8000
+_cmd_load_loop:
+	call uart1_getch
+	cp 0x0D
+	jr z, _cmd_load_copy
+	; not newline, convert to nibble
+	call nibble_to_val
+	rrca
+	rrca
+	rrca
+	rrca
+	ld b, a
+	; get lower nibble
+	call uart1_getch
+	call nibble_to_val
+	or b
+	; write data to ram
+	ld (hl), a
+	inc hl
+	jr _cmd_load_loop
+_cmd_load_copy:
+	; switch to upper ram page 1
+	ld a, 0x01
+	out (PORT_MEMPAGE), a
+	; copy jump code
+	ld hl, jump_code
+	ld bc, 0x8000
+	ld d, jump_code_len
+_cmd_load_copy_loop:
+	ld a, (hl)
+	ld (bc), a
+	inc hl
+	inc bc
+	dec d
+	jr nz, _cmd_load_copy_loop
+	; everything ok
+	ld a, 'K'
+	call uart1_putc
+	call uart1_newline
+	; code copied, jump to 0x8000
+	jp 0x8000
 
 
 
@@ -617,12 +679,16 @@ str_promt:	.db "$ ",0
 str_error:	.db	"Error", 0x0D, 0x0A, 0x00
 
 
-lst_cmds_str_ptr:	.dw lst_cmds_str_help,lst_cmds_str_dump,lst_cmds_str_mset,lst_cmds_str_jump,lst_cmds_str_page,0x0000
-lst_cmds_str_help:	.db "help",0
-lst_cmds_str_dump:	.db "dump",0
-lst_cmds_str_mset:	.db "mset",0
-lst_cmds_str_jump:	.db "jump",0
+lst_cmds_str_ptr:	.dw lst_cmds_str_help,lst_cmds_str_dump,lst_cmds_str_mset,lst_cmds_str_jump,lst_cmds_str_page,lst_cmds_str_load,0x0000
+lst_cmds_str_help:	.db "help",0, "Prints this help",0
+lst_cmds_str_dump:	.db "dump",0, "Dumps 256bytes starting at location specified",0
+lst_cmds_str_mset:	.db "mset",0, "Write bytes to memory location",0
+lst_cmds_str_jump:	.db "jump",0, "Jumps to location",0
+lst_cmds_str_page:	.db "page",0, "Changes upper 32k memory page",0
+lst_cmds_str_load:	.db "load",0, "Writes bytes to page 0 and jumps to 0x0000",0
 
-lst_cmds_str_page:	.db "page",0
+lst_cmds_ptr: .dw cmd_help, cmd_dump, cmd_mset, cmd_jump, cmd_page, cmd_load
 
-lst_cmds_ptr: .dw cmd_help, cmd_dump, cmd_mset, cmd_jump, cmd_page
+
+jump_code:		.db	0x31,0xFF,0xFF,0x3E,0x11,0xD3,0x00,0xC3,0x00,0x00
+jump_code_len:	.equ 10
