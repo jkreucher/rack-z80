@@ -7,6 +7,9 @@ cp arg1
 ; arg1 <= a -> carry reset
 ; arg1 == a -> zero set
 ; arg1 != a -> zero reset
+;
+; a <  arg1 -> carry set
+; a >= arg1 -> carry reset
 
 
 ; ch_to_upper

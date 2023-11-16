@@ -1,0 +1,923 @@
+                        ; --------------------------------------
+                        ; zasm: assemble "monitor.asm"
+                        ; date: 2023-11-16 01:02:42
+                        ; --------------------------------------
+
+
+                        ; defines
+0000:                   PORT_MEMPAGE	.equ	0x00
+0010:                   PORT_UART1		.equ	0x10
+0018:                   PORT_UART2		.equ	0x18
+                        ; variables
+8000:                   PTR_INPUT		.equ	0x8000
+8020:                   PTR_ARGV		.equ	0x8020 ; list of pointers to PTR_INPUT
+8030:                   PTR_ARGC		.equ	0x8030
+                        
+                        
+0000:                   .org 0x0000
+0000:                   init:
+0000: F3       [ 4]     	di
+                        	; set upper ram page
+                        	;ld a, 0x00
+                        	;out (PORT_MEMPAGE), a
+                        	; cpu init
+0001: 31FFFF   [14]     	ld sp, 0xFFFF
+0004: 3E00     [21]     	ld a, 0x00
+0006: ED47     [30]     	ld i, a
+0008: ED5E     [38]     	im 2
+                        	; device init
+000A: CDE903   [55]     	call uart_init
+                        
+                        	; clear memory
+000D: 210080   [65]     	ld hl, 0x8000
+0010:                   _init_loop:
+0010: 36FF     [10]     	ld (hl), 0xFF
+0012: 23       [16]     	inc hl
+0013: 7C       [20]     	ld a, h
+0014: FEFF     [27]     	cp 0xFF
+0016: C21000   [37|37]  	jp nz, _init_loop
+                        
+                        	; jump to main
+0019: C30001   [47]     	jp main
+                        
+                        
+                        
+001C: FFFFFFFF          .org 0x0100
+0020: FF...             
+0100:                   main:
+0100: 213404   [10]     	ld hl, str_hello
+0103: CD1204   [27]     	call uart1_puts
+0106:                   _main_loop:
+                        	; print promt
+0106: 213D04   [10]     	ld hl, str_promt
+0109: CD1204   [27]     	call uart1_puts
+                        	; input buffer
+010C: 210080   [37]     	ld hl, PTR_INPUT
+                        	; pointer to argument
+010F: 444D     [45]     	ld bc, hl
+                        	; argc
+0111: 3E00     [52]     	ld a, 0
+0113: 323080   [65]     	ld (PTR_ARGC), a
+0116:                   _main_loop_getc:
+0116: CD1D04   [17]     	call uart1_getch
+                        	; check if newline or space
+0119: FE0D     [24]     	cp 0x0D
+011B: 2830     [31|36]  	jr z, _main_newline
+                        	; echo back
+011D: CD0604   [48]     	call uart1_putc
+                        	; check if space
+0120: FE20     [55]     	cp ' '
+0122: 2008     [62|67]  	jr nz, _main_loop_no_space
+                        	; save memory location to argv pointer
+0124: CD5B01   [79]     	call add_argv
+                        	; save next location as start of new argument
+0127: 444D     [87]     	ld bc, hl
+0129: 03       [93]     	inc bc
+                        	; save a 0 instead of a space
+012A: 3E00     [100]    	ld a, 0
+012C:                   _main_loop_no_space:
+                        	; check if backspace
+012C: FE08     [ 7]     	cp 0x08
+012E: 2804     [14|19]  	jr z, _main_loop_backspace
+                        	; not return: put into buffer
+0130: 77       [21]     	ld (hl), a
+0131: 23       [27]     	inc hl
+0132: 18E2     [39]     	jr _main_loop_getc
+0134:                   _main_loop_backspace:
+0134: 3E00     [ 7]     	ld a, 0
+0136: 77       [14]     	ld (hl), a
+                        	; check if pointer at 0
+0137: 110080   [24]     	ld de, PTR_INPUT
+013A: ED52     [39]     	sbc hl, de
+013C: 19       [50]     	add hl, de
+013D: CA1601   [60|60]  	jp z, _main_loop_getc
+                        	; if there are some chars, delete last one
+0140: 2B       [66]     	dec hl
+                        	; print space
+0141: 3E20     [73]     	ld a, ' '
+0143: CD0604   [90]     	call uart1_putc
+0146: 3E08     [97]     	ld a, 0x08
+0148: CD0604   [114]    	call uart1_putc
+014B: 18C9     [126]    	jr _main_loop_getc
+014D:                   _main_newline:
+                        	; enter pressed
+                        	; end buffer with terminating 0
+014D: 3600     [10]     	ld (hl), 0x00
+                        	; save last argument in argv list
+014F: CD5B01   [27]     	call add_argv
+                        	; parse command
+0152: CD2704   [44]     	call uart1_newline
+0155: CD7701   [61]     	call handle_cmd
+                        	; print shell again
+0158: C30601   [71]     	jp _main_loop
+                        
+                        
+                        
+                        ; add_argv
+                        ;   add pointer in bc to argv list
+015B:                   add_argv:
+015B: D5       [11]     	push de
+015C: E5       [22]     	push hl
+                        	; get argc and multiply by 2
+015D: 3A3080   [35]     	ld a, (PTR_ARGC)
+0160: CB27     [43]     	sla a
+0162: 1600     [50]     	ld d, 0
+0164: 5F       [54]     	ld e, a
+                        	; de is offset
+0165: 212080   [64]     	ld hl, PTR_ARGV
+0168: 19       [75]     	add hl, de
+0169: 7123702B [101]    	ld (hl), bc
+                        	; increment argc
+016D: 3A3080   [114]    	ld a, (PTR_ARGC)
+0170: 3C       [118]    	inc a
+0171: 323080   [131]    	ld (PTR_ARGC), a
+                        	; return
+0174: E1       [141]    	pop hl
+0175: D1       [151]    	pop de
+0176: C9       [161]    	ret
+                        
+                        
+                        
+                        ; handle command string
+                        ;   command string in argv
+0177:                   handle_cmd:
+                        	; check if input buffer zero
+0177: 3A0080   [13]     	ld a, (PTR_INPUT)
+017A: FE00     [20]     	cp 0
+017C: C8       [25|31]  	ret z
+                        	; get mnemonic id by comparing to list
+017D: ED4B2080 [45]     	ld bc, (PTR_ARGV)
+0181: 214804   [55]     	ld hl, lst_cmds_str_ptr
+0184: CDA501   [72]     	call get_index
+0187: FEFF     [79]     	cp 0xFF
+0189: 2813     [86|91]  	jr z, _handle_cmd_error
+                        	; get function pointer, index in a
+018B: 212D05   [96]     	ld hl, lst_cmds_ptr
+018E: CDCC01   [113]    	call get_word_from_index
+0191: E5       [124]    	push hl
+                        	; save return address in stack for return
+0192: CD9501   [141]    	call _handle_cmd_call_func
+0195:                   _handle_cmd_call_func:
+                        	; get pc address 0x0178
+0195: E1       [10]     	pop hl
+0196: 010800   [20]     	ld bc, 8
+0199: 09       [31]     	add hl, bc
+019A: E5       [42]     	push hl ; hl points to address after jp (hl)
+                        	; call address in hl
+019B: E1       [52]     	pop hl
+019C: E9       [56]     	jp (hl)
+019D: C9       [66]     	ret
+019E:                   _handle_cmd_error:
+019E: 214004   [10]     	ld hl, str_error
+01A1: CD1204   [27]     	call uart1_puts
+01A4: C9       [37]     	ret
+                        
+                        
+                        
+                        ; pointer to string in bc
+                        ; pointer to list of strings in hl
+                        ; 
+                        ;   compares command to first space to list of commands
+01A5:                   get_index:
+                        	; save start of string
+01A5: 3E00     [ 7]     	ld a, 0
+01A7: F5       [18]     	push af
+01A8: 5059     [26]     	ld de, bc
+01AA:                   _get_index_list_loop:
+                        	; get pointer to string by index
+01AA: 214804   [10]     	ld hl, lst_cmds_str_ptr
+01AD: CDCC01   [27]     	call get_word_from_index ; gets pointer to string with index a
+                        	; last index is zero
+01B0: 010000   [37]     	ld bc, 0x0000
+01B3: ED42     [52]     	sbc hl, bc
+01B5: 09       [63]     	add hl, bc
+01B6: 2810     [70|75]  	jr z, _get_index_not_found
+                        	; get start of string, array pointer in hl
+01B8: 424B     [78]     	ld bc, de
+                        	; pointer to command_str[a] in hl
+                        	; compare strcmp(command_str[a], str)
+01BA: CDDF01   [95]     	call strcmp
+                        	; check if strings were the same
+01BD: FE01     [102]    	cp 1
+01BF: 2805     [109|114]	jr z, _get_index_found
+                        	; not equal: next index
+01C1: F1       [119]    	pop af
+01C2: 3C       [123]    	inc a
+01C3: F5       [134]    	push af
+                        	; index in a
+01C4: 18E4     [146]    	jr _get_index_list_loop
+01C6:                   _get_index_found:
+01C6: F1       [10]     	pop af
+01C7: C9       [20]     	ret
+01C8:                   _get_index_not_found:
+01C8: F1       [10]     	pop af
+01C9: 3EFF     [17]     	ld a, 0xFF
+01CB: C9       [27]     	ret
+                        
+                        
+                        
+                        ; get_word_from_index
+                        ;   hl - pointer to start of list
+                        ;    a - index of list of words
+                        ;   Returns: hl - word at (hl + a*2)
+01CC:                   get_word_from_index: ; hl = (hl+a*2)
+01CC: F5       [11]     	push af
+01CD: CB27     [19]     	sla a ; a=a*2
+                        	; add a to hl
+01CF: 85       [23]     	add a, l
+01D0: 6F       [27]     	ld l, a
+01D1: 8C       [31]     	adc a, h
+01D2: 95       [35]     	sub l
+01D3: 67       [39]     	ld h, a
+                        	; get word from pointer
+01D4: C5       [50]     	push bc
+01D5: 444D     [58]     	ld bc, hl
+01D7: 0A       [65]     	ld a, (bc)
+01D8: 6F       [69]     	ld l, a
+01D9: 03       [75]     	inc bc
+01DA: 0A       [82]     	ld a, (bc)
+01DB: 67       [86]     	ld h, a
+01DC: C1       [96]     	pop bc
+                        	; return
+01DD: F1       [106]    	pop af
+01DE: C9       [116]    	ret
+                        
+                        
+                        
+                        ; strcmp
+                        ;   compare two strings
+                        ;   hl - first string
+                        ;   bc - second string
+                        ;   returns a: 0 not equal, 1 equal
+01DF:                   strcmp:
+                        	; check if second string ends
+01DF: 7E       [ 7]     	ld a, (hl)
+01E0: FE00     [14]     	cp 0
+01E2: 280F     [21|26]  	jr z, _strcmp_equal
+                        	; check if first string ends
+01E4: 0A       [28]     	ld a, (bc)
+01E5: FE00     [35]     	cp 0
+01E7: 280A     [42|47]  	jr z, _strcmp_equal
+                        	; check if chars are the same
+01E9: BE       [49]     	cp (hl)
+01EA: 2004     [56|61]  	jr nz, _strcmp_not_equal
+                        	; next char
+01EC: 23       [62]     	inc hl
+01ED: 03       [68]     	inc bc
+01EE: 18EF     [80]     	jr strcmp
+01F0:                   _strcmp_not_equal:
+01F0: 3E00     [ 7]     	ld a, 0
+01F2: C9       [17]     	ret
+01F3:                   _strcmp_equal:
+01F3: 3E01     [ 7]     	ld a, 1
+01F5: C9       [17]     	ret
+                        
+                        
+                        
+                        ; command: print help
+01F6:                   cmd_help:
+01F6: 212102   [10]     	ld hl, str_cmd_help
+01F9: CD1204   [27]     	call uart1_puts
+                        	; index counter
+01FC: 0600     [34]     	ld b, 0
+01FE:                   _cmd_help_loop:
+01FE: 78       [ 4]     	ld a, b
+01FF: 214804   [14]     	ld hl, lst_cmds_str_ptr
+0202: CDCC01   [31]     	call get_word_from_index
+                        	; check if pointer is zero
+0205: 110000   [41]     	ld de, 0x0000
+0208: ED52     [56]     	sbc hl, de
+020A: 19       [67]     	add hl, de
+020B: C8       [72|78]  	ret z
+                        	; print command name
+020C: CD1204   [89]     	call uart1_puts
+                        	; print space
+020F: 3E20     [96]     	ld a, ' '
+0211: CD0604   [113]    	call uart1_putc
+0214: CD0604   [130]    	call uart1_putc
+                        	; print description
+0217: 23       [136]    	inc hl
+0218: CD1204   [153]    	call uart1_puts
+021B: CD2704   [170]    	call uart1_newline
+                        	; next index
+021E: 04       [174]    	inc b
+021F: 18DD     [186]    	jr _cmd_help_loop
+0221: 436F6D6D          str_cmd_help: .db "Commands:", 0x0D, 0x0A, 0x00
+0225: 616E6473          
+0229: 3A0D0A00          
+                        
+                        
+                        
+                        ; command: dump memory
+                        ;   starting address in hl
+                        ;   puts first argument in bc, second in de
+022D:                   cmd_dump:
+022D: 3A3080   [13]     	ld a, (PTR_ARGC)
+0230: FE03     [20]     	cp 3
+0232: 201F     [27|32]  	jr nz, _cmd_dump_error
+                        	; get second argument
+0234: 212080   [37]     	ld hl, PTR_ARGV
+0237: 3E01     [44]     	ld a, 1
+0239: CDCC01   [61]     	call get_word_from_index
+                        	; convert string to hex word
+023C: CD9803   [78]     	call word_to_val
+023F: C5       [89]     	push bc
+                        	; get third argument
+0240: 212080   [99]     	ld hl, PTR_ARGV
+0243: 3E02     [106]    	ld a, 2
+0245: CDCC01   [123]    	call get_word_from_index
+                        	; convert string to hex word
+0248: CD9803   [140]    	call word_to_val
+                        	; dump memory (start in hl, end in bc)
+024B: E1       [150]    	pop hl
+024C: CD4F03   [167]    	call dump
+024F: CD2704   [184]    	call uart1_newline
+0252: C9       [194]    	ret
+0253:                   _cmd_dump_error
+0253: 215A02   [10]     	ld hl, str_cmd_dump_help
+0256: CD1204   [27]     	call uart1_puts
+0259: C9       [37]     	ret
+025A: 55736167          str_cmd_dump_help: .db "Usage: dump <start_addr> <end_addr>", 0x0D, 0x0A, "address in hex", 0x0D, 0x0A, "example: dump 1000", 0x0D, 0x0A, 0x00
+025E: 653A2064          
+0262: 756D7020          
+0266: 3C737461          
+026A: 72745F61          
+026E: 6464723E          
+0272: 203C656E          
+0276: 645F6164          
+027A: 64723E0D          
+027E: 0A616464          
+0282: 72657373          
+0286: 20696E20          
+028A: 6865780D          
+028E: 0A657861          
+0292: 6D706C65          
+0296: 3A206475          
+029A: 6D702031          
+029E: 3030300D          
+02A2: 0A00              
+                        
+                        
+                        
+                        ; command: write memory
+                        ;   argv in PTR_ARGV
+                        ;   argc in PTR_ARGC
+02A4:                   cmd_mset:
+02A4: 3A3080   [13]     	ld a, (PTR_ARGC)
+02A7: FE02     [20]     	cp 2
+02A9: 2035     [27|32]  	jr nz, _cmd_mset_error
+                        	; get second argument
+02AB: 212080   [37]     	ld hl, PTR_ARGV
+02AE: 3E01     [44]     	ld a, 1
+02B0: CDCC01   [61]     	call get_word_from_index
+                        	; convert argument to word
+02B3: CD9803   [78]     	call word_to_val
+02B6: 6069     [86]     	ld hl, bc
+                        	; wait for data and copy to location
+02B8:                   _cmd_mset_upper:
+                        	; get first char
+02B8: CD1D04   [17]     	call uart1_getch
+02BB: CDB103   [34]     	call ch_to_upper
+                        	; return on newline
+02BE: FE0D     [41]     	cp 0x0D
+02C0: 281A     [48|53]  	jr z, _cmd_mset_end
+                        	; convert to 4 bits and shift
+02C2: CD8A03   [65]     	call nibble_to_val
+02C5: 0F       [69]     	rrca
+02C6: 0F       [73]     	rrca
+02C7: 0F       [77]     	rrca
+02C8: 0F       [81]     	rrca
+02C9: 47       [85]     	ld b, a
+                        	; get lower nibble
+02CA: CD1D04   [102]    	call uart1_getch
+02CD: CDB103   [119]    	call ch_to_upper
+                        	; return on newline
+02D0: FE0D     [126]    	cp 0x0D
+02D2: 2808     [133|138]	jr z, _cmd_mset_end
+                        	; convert to 4 bits
+02D4: CD8A03   [150]    	call nibble_to_val
+02D7: B0       [154]    	or b
+                        	; save to memory
+02D8: 77       [161]    	ld (hl), a
+                        	; next memory location
+02D9: 23       [167]    	inc hl
+02DA: 18DC     [179]    	jr _cmd_mset_upper
+02DC:                   _cmd_mset_end:
+02DC: CD2704   [17]     	call uart1_newline
+02DF: C9       [27]     	ret
+02E0:                   _cmd_mset_error:
+02E0: C9       [10]     	ret
+                        
+                        
+                        
+                        ; command: jump to location
+                        ;   argv in PTR_ARGV
+                        ;   argc in PTR_ARGC
+02E1:                   cmd_jump:
+02E1: 3A3080   [13]     	ld a, (PTR_ARGC)
+02E4: FE02     [20]     	cp 2
+02E6: 200E     [27|32]  	jr nz, _cmd_jump_error
+                        	; get second argument
+02E8: 212080   [37]     	ld hl, PTR_ARGV
+02EB: 3E01     [44]     	ld a, 1
+02ED: CDCC01   [61]     	call get_word_from_index
+                        	; convert argument to word
+02F0: CD9803   [78]     	call word_to_val
+02F3: 6069     [86]     	ld hl, bc
+                        	; jump to location
+02F5: E9       [90]     	jp (hl)
+02F6:                   _cmd_jump_error:
+02F6: C9       [10]     	ret
+                        
+                        
+                        
+                        ; command: change upper ram page
+02F7:                   cmd_page:
+02F7: 3A3080   [13]     	ld a, (PTR_ARGC)
+02FA: FE02     [20]     	cp 2
+02FC: 20E2     [27|32]  	jr nz, _cmd_mset_error
+                        	; get second argument
+02FE: 212080   [37]     	ld hl, PTR_ARGV
+0301: 3E01     [44]     	ld a, 1
+0303: CDCC01   [61]     	call get_word_from_index
+                        	; convert argument to word
+0306: CD9803   [78]     	call word_to_val
+0309: 79       [82]     	ld a, c
+                        	; write page id
+030A: D300     [93]     	out (PORT_MEMPAGE), a
+030C: C9       [103]    	ret
+                        
+                        
+                        
+                        ; command: load bytes to 0x0000
+030D:                   cmd_load:
+                        	; switch upper 32k to page 0
+030D: 3E00     [ 7]     	ld a, 0x00
+030F: D300     [18]     	out (PORT_MEMPAGE), a
+                        	; set stackpointer (since page was changed)
+0311: 31FFFF   [28]     	ld sp, 0xFFFF
+                        	; page 0 start address
+0314: 210080   [38]     	ld hl, 0x8000
+0317:                   _cmd_load_loop:
+0317: CD1D04   [17]     	call uart1_getch
+031A: FE0D     [24]     	cp 0x0D
+031C: 2813     [31|36]  	jr z, _cmd_load_copy
+                        	; not newline, convert to nibble
+031E: CD8A03   [48]     	call nibble_to_val
+0321: 0F       [52]     	rrca
+0322: 0F       [56]     	rrca
+0323: 0F       [60]     	rrca
+0324: 0F       [64]     	rrca
+0325: 47       [68]     	ld b, a
+                        	; get lower nibble
+0326: CD1D04   [85]     	call uart1_getch
+0329: CD8A03   [102]    	call nibble_to_val
+032C: B0       [106]    	or b
+                        	; write data to ram
+032D: 77       [113]    	ld (hl), a
+032E: 23       [119]    	inc hl
+032F: 18E6     [131]    	jr _cmd_load_loop
+0331:                   _cmd_load_copy:
+                        	; switch to upper ram page 1
+0331: 3E01     [ 7]     	ld a, 0x01
+0333: D300     [18]     	out (PORT_MEMPAGE), a
+                        	; copy jump code
+0335: 213905   [28]     	ld hl, jump_code
+0338: 010080   [38]     	ld bc, 0x8000
+033B: 160A     [45]     	ld d, jump_code_len
+033D:                   _cmd_load_copy_loop:
+033D: 7E       [ 7]     	ld a, (hl)
+033E: 02       [14]     	ld (bc), a
+033F: 23       [20]     	inc hl
+0340: 03       [26]     	inc bc
+0341: 15       [30]     	dec d
+0342: 20F9     [37|42]  	jr nz, _cmd_load_copy_loop
+                        	; everything ok
+0344: 3E4B     [44]     	ld a, 'K'
+0346: CD0604   [61]     	call uart1_putc
+0349: CD2704   [78]     	call uart1_newline
+                        	; code copied, jump to 0x8000
+034C: C30080   [88]     	jp 0x8000
+                        
+                        
+                        
+                        ; dump
+                        ;   hl - start address
+                        ;   bc - end address
+034F:                   dump:
+034F: D5       [11]     	push de
+0350: 5059     [19]     	ld de, bc
+                        	
+0352:                   _dump_line:
+                        	; print address
+0352: CDDE03   [17]     	call print_word
+                        	; print colon and space
+0355: 3E3A     [24]     	ld a, ':'
+0357: CD0604   [41]     	call uart1_putc
+035A: 3E20     [48]     	ld a, ' '
+035C: CD0604   [65]     	call uart1_putc
+                        	; print 16 bytes
+035F: E5       [76]     	push hl
+0360: 0610     [83]     	ld b, 0x10
+0362:                   _dump_line_loop:
+0362: 7E       [ 7]     	ld a, (hl)
+0363: CDD103   [24]     	call print_byte
+0366: 3E20     [31]     	ld a, ' '
+0368: CD0604   [48]     	call uart1_putc
+036B: 23       [54]     	inc hl
+                        	; decrement b and jump if b not zero
+036C: 10F4     [62|67]  	djnz _dump_line_loop
+                        	; get memory location
+036E: E1       [72]     	pop hl
+036F: 0610     [79]     	ld b, 0x10
+0371:                   _dump_ascii_loop:
+0371: 7E       [ 7]     	ld a, (hl)
+                        	; check if ascii
+0372: CDBA03   [24]     	call is_ascii
+0375: 3802     [31|36]  	jr c, _dump_ascii_loop_is_ascii
+                        	; not ascii: use '.' as placeholder
+0377: 3E2E     [38]     	ld a, '.'
+0379:                   _dump_ascii_loop_is_ascii:
+0379: CD0604   [17]     	call uart1_putc
+037C: 23       [23]     	inc hl
+                        	; decrement b and jump if b not zero
+037D: 10F2     [31|36]  	djnz _dump_ascii_loop
+                        	; 16 bytes printed
+037F: CD2704   [48]     	call uart1_newline
+                        	; check if at the end
+0382: B7       [52]     	or a
+0383: ED52     [67]     	sbc hl, de
+0385: 19       [78]     	add hl, de
+0386: 38CA     [85|90]  	jr c, _dump_line
+                        	; end of dump
+0388: D1       [95]     	pop de
+0389: C9       [105]    	ret
+                        
+                        
+                        
+                        ; nibble_to_val
+                        ;   char in A, convert to hex number
+038A:                   nibble_to_val:
+038A: CDB103   [17]     	call ch_to_upper
+038D: FE3A     [24]     	cp '9'+1
+038F: 3802     [31|36]  	jr c, _nibble_to_val_1 ; jump if number 0-9
+0391: D607     [38]     	sub 7                  ; sub for A-F
+0393:                   _nibble_to_val_1:
+0393: D630     [ 7]     	sub '0'
+0395: E60F     [14]     	and 0x0F
+0397: C9       [24]     	ret
+                        
+                        
+                        
+                        ; word_to_val
+                        ;   pointer to string in hl
+                        ;   returns word in bc
+0398:                   word_to_val:
+                        	; convert string to hex word
+0398: 010000   [10]     	ld bc, 0
+039B:                   _word_to_val_loop:
+039B: 7E       [ 7]     	ld a, (hl)
+039C: FE00     [14]     	cp 0
+039E: C8       [19|25]  	ret z
+039F: CD8A03   [36]     	call nibble_to_val
+03A2: E5       [47]     	push hl
+                        	; shift left bc 4 times
+03A3: 6069     [55]     	ld hl, bc
+03A5: 29       [66]     	add hl, hl
+03A6: 29       [77]     	add hl, hl
+03A7: 29       [88]     	add hl, hl
+03A8: 29       [99]     	add hl, hl
+03A9: 85       [103]    	add a, l
+03AA: 6F       [107]    	ld l, a
+03AB: 444D     [115]    	ld bc, hl
+                        	; advance pointer to next char
+03AD: E1       [125]    	pop hl
+03AE: 23       [131]    	inc hl
+03AF: 18EA     [143]    	jr _word_to_val_loop
+                        
+                        
+                        
+                        ; ch_to_upper
+                        ;   char in A, convert to uppercase
+03B1:                   ch_to_upper:
+                        	; less than 'a': return
+03B1: FE61     [ 7]     	cp 'a'
+03B3: D8       [12|18]  	ret c
+                        	; greater than 'z': return
+03B4: FE7B     [19]     	cp 'z'+1
+03B6: D0       [24|30]  	ret nc
+                        	; convert to upper case
+03B7: D620     [31]     	sub 0x20
+03B9: C9       [41]     	ret
+                        
+                        
+                        
+                        ; checks if byte is a printable ascii char
+                        ;   a - byte to check
+                        ;   Returns: if printable char then carry flag is set
+03BA:                   is_ascii:
+03BA: FE20     [ 7]     	cp 0x20
+03BC: 3803     [14|19]  	jr c, _is_ascii_nope
+03BE: FE7F     [21]     	cp 0x7F
+03C0: C9       [31]     	ret
+03C1:                   _is_ascii_nope:
+03C1: 3F       [ 4]     	ccf
+03C2: C9       [14]     	ret
+                        
+                        
+                        
+                        ; print_nibble
+                        ;   byte in A, convert to char and print via uart
+03C3:                   print_nibble:
+03C3: E60F     [ 7]     	and 0x0F
+03C5: C630     [14]     	add a, '0'
+03C7: FE3A     [21]     	cp '9'+1
+03C9: 3802     [28|33]  	jr c, print_nibble_1
+03CB: C607     [35]     	add a, 'A'-'0'-0xA
+03CD:                   print_nibble_1:
+03CD: CD0604   [17]     	call uart1_putc
+03D0: C9       [27]     	ret
+                        
+                        
+                        
+                        ; print_byte
+                        ;   byte in A
+03D1:                   print_byte:
+03D1: F5       [11]     	push af
+03D2: 0F       [15]     	rrca
+03D3: 0F       [19]     	rrca
+03D4: 0F       [23]     	rrca
+03D5: 0F       [27]     	rrca
+03D6: CDC303   [44]     	call print_nibble
+03D9: F1       [54]     	pop af
+03DA: CDC303   [71]     	call print_nibble
+03DD: C9       [81]     	ret
+                        
+                        
+                        
+                        ; print a 16-Bit word to serial port as hex value
+                        ;   hl - word to print in hex
+03DE:                   print_word:
+03DE: F5       [11]     	push af
+03DF: 7C       [15]     	ld a, h
+03E0: CDD103   [32]     	call print_byte
+03E3: 7D       [36]     	ld a, l
+03E4: CDD103   [53]     	call print_byte
+03E7: F1       [63]     	pop af
+03E8: C9       [73]     	ret
+                        
+                        
+                        
+                        ;   init uart port
+03E9:                   uart_init:
+                        	; UART1
+                        	; LCR: Set DLAB Bit for Baud Rate
+03E9: 3E80     [ 7]     	ld a, 0x80
+03EB: D313     [18]     	out (PORT_UART1+3), a
+                        	; Set Baud Rate
+03ED: 3E0C     [25]     	ld a, 0x0c
+03EF: D310     [36]     	out (PORT_UART1), a
+03F1: 3E00     [43]     	ld a, 0x00
+03F3: D311     [54]     	out (PORT_UART1+1), a
+                        	; LCR: 8 bit, one stop, no parity, DLAB off
+03F5: 3E03     [61]     	ld a, 0x03
+03F7: D313     [72]     	out (PORT_UART1+3), a
+                        	; No Interrupt
+03F9: 3E00     [79]     	ld a, 0x00
+03FB: D311     [90]     	out (PORT_UART1+1), a
+                        	; FCR: FIFO off
+03FD: 3E00     [97]     	ld a, 0x00
+03FF: D312     [108]    	out (PORT_UART1+2), a
+                        	; MCR: Deactivate all Pins
+0401: 3E00     [115]    	ld a, 0x00
+0403: D314     [126]    	out (PORT_UART1+4), a
+                        	; return
+0405: C9       [136]    	ret
+                        
+                        
+                        
+                        ; uart1_putc
+                        ;   sends a single char in a
+0406:                   uart1_putc:
+0406: F5       [11]     	push af
+0407:                   _uart1_putc_loop:
+                        	; wait till ready
+0407: DB15     [11]     	in a, (PORT_UART1+5)
+0409: E640     [18]     	and 0x40
+040B: CA0704   [28|28]  	jp z, _uart1_putc_loop
+                        	; ready to send char now
+040E: F1       [38]     	pop af
+040F: D310     [49]     	out (PORT_UART1), a
+                        	; return from subroutine
+0411: C9       [59]     	ret
+                        
+                        
+                        
+                        ; uart1_puts
+                        ;   sends a 0 terminated string. Pointer in hl.
+0412:                   uart1_puts:
+0412: 7E       [ 7]     	ld a, (hl)
+0413: F600     [14]     	or 0
+0415: C8       [19|25]  	ret z	; end of string? Yes: return
+0416: CD0604   [36]     	call uart1_putc
+0419: 23       [42]     	inc hl	; next character
+041A: C31204   [52]     	jp uart1_puts
+                        
+                        
+                        
+                        ; uart1_getch
+                        ;   waits until single character received. Character in a
+041D:                   uart1_getch:
+041D: DB15     [11]     	in a, (PORT_UART1+5)
+041F: E601     [18]     	and 0x01			; received char?
+0421: CA1D04   [28|28]  	jp z, uart1_getch   ; loop until a char is received
+0424: DB10     [39]     	in a, (PORT_UART1)	; get char
+0426: C9       [49]     	ret
+                        
+                        
+                        
+                        ; uart1_newline
+                        ;   prints newline to terminal
+0427:                   uart1_newline:
+0427: F5       [11]     	push af
+0428: 3E0A     [18]     	ld a, 0x0A
+042A: CD0604   [35]     	call uart1_putc
+042D: 3E0D     [42]     	ld a, 0x0D
+042F: CD0604   [59]     	call uart1_putc
+0432: F1       [69]     	pop af
+0433: C9       [79]     	ret
+                        
+                        
+                        
+                        
+                        
+0434: 48656C6C          str_hello:	.db "Hello!", 0x0D, 0x0A, 0x00
+0438: 6F210D0A          
+043C: 00                
+043D: 242000            str_promt:	.db "$ ",0
+0440: 4572726F          str_error:	.db	"Error", 0x0D, 0x0A, 0x00
+0444: 720D0A00          
+                        
+                        
+0448: 56046C04          lst_cmds_str_ptr:	.dw lst_cmds_str_help,lst_cmds_str_dump,lst_cmds_str_mset,lst_cmds_str_jump,lst_cmds_str_page,lst_cmds_str_load,0x0000
+044C: 9F04C304          
+0450: DA04FD04          
+0454: 0000              
+0456: 68656C70          lst_cmds_str_help:	.db "help",0, "Prints this help",0
+045A: 00507269          
+045E: 6E747320          
+0462: 74686973          
+0466: 2068656C          
+046A: 7000              
+046C: 64756D70          lst_cmds_str_dump:	.db "dump",0, "Dumps 256bytes starting at location specified",0
+0470: 0044756D          
+0474: 70732032          
+0478: 35366279          
+047C: 74657320          
+0480: 73746172          
+0484: 74696E67          
+0488: 20617420          
+048C: 6C6F6361          
+0490: 74696F6E          
+0494: 20737065          
+0498: 63696669          
+049C: 656400            
+049F: 6D736574          lst_cmds_str_mset:	.db "mset",0, "Write bytes to memory location",0
+04A3: 00577269          
+04A7: 74652062          
+04AB: 79746573          
+04AF: 20746F20          
+04B3: 6D656D6F          
+04B7: 7279206C          
+04BB: 6F636174          
+04BF: 696F6E00          
+04C3: 6A756D70          lst_cmds_str_jump:	.db "jump",0, "Jumps to location",0
+04C7: 004A756D          
+04CB: 70732074          
+04CF: 6F206C6F          
+04D3: 63617469          
+04D7: 6F6E00            
+04DA: 70616765          lst_cmds_str_page:	.db "page",0, "Changes upper 32k memory page",0
+04DE: 00436861          
+04E2: 6E676573          
+04E6: 20757070          
+04EA: 65722033          
+04EE: 326B206D          
+04F2: 656D6F72          
+04F6: 79207061          
+04FA: 676500            
+04FD: 6C6F6164          lst_cmds_str_load:	.db "load",0, "Writes bytes to page 0 and jumps to 0x0000",0
+0501: 00577269          
+0505: 74657320          
+0509: 62797465          
+050D: 7320746F          
+0511: 20706167          
+0515: 65203020          
+0519: 616E6420          
+051D: 6A756D70          
+0521: 7320746F          
+0525: 20307830          
+0529: 30303000          
+                        
+052D: F6012D02          lst_cmds_ptr: .dw cmd_help, cmd_dump, cmd_mset, cmd_jump, cmd_page, cmd_load
+0531: A402E102          
+0535: F7020D03          
+                        
+                        
+0539: 31FFFF3E          jump_code:		.db	0x31,0xFF,0xFF,0x3E,0x11,0xD3,0x00,0xC3,0x00,0x00
+053D: 11D300C3          
+0541: 0000              
+000A:                   jump_code_len:	.equ 10
+
+
+; +++ segments +++
+
+#CODE          = $0000 =     0,  size = $0543 =  1347
+
+; +++ global symbols +++
+
+PORT_MEMPAGE         = $0000 =     0          monitor.asm:2
+PORT_UART1           = $0010 =    16          monitor.asm:3
+PORT_UART2           = $0018 =    24          monitor.asm:4 (unused)
+PTR_ARGC             = $8030 = 32816          monitor.asm:8
+PTR_ARGV             = $8020 = 32800          monitor.asm:7
+PTR_INPUT            = $8000 = 32768          monitor.asm:6
+_cmd_dump_error      = $0253 =   595          monitor.asm:327
+_cmd_help_loop       = $01FE =   510          monitor.asm:276
+_cmd_jump_error      = $02F6 =   758          monitor.asm:402
+_cmd_load_copy       = $0331 =   817          monitor.asm:453
+_cmd_load_copy_loop  = $033D =   829          monitor.asm:461
+_cmd_load_loop       = $0317 =   791          monitor.asm:434
+_cmd_mset_end        = $02DC =   732          monitor.asm:378
+_cmd_mset_error      = $02E0 =   736          monitor.asm:381
+_cmd_mset_upper      = $02B8 =   696          monitor.asm:350
+_dump_ascii_loop     = $0371 =   881          monitor.asm:506
+_dump_ascii_loop_is_ascii = $0379 =   889          monitor.asm:513
+_dump_line           = $0352 =   850          monitor.asm:484
+_dump_line_loop      = $0362 =   866          monitor.asm:495
+_end                 = $0543 =  1347          monitor.asm:11 (unused)
+_get_index_found     = $01C6 =   454          monitor.asm:202
+_get_index_list_loop = $01AA =   426          monitor.asm:179
+_get_index_not_found = $01C8 =   456          monitor.asm:205
+_handle_cmd_call_func = $0195 =   405          monitor.asm:153
+_handle_cmd_error    = $019E =   414          monitor.asm:163
+_init_loop           = $0010 =    16          monitor.asm:27
+_is_ascii_nope       = $03C1 =   961          monitor.asm:596
+_main_loop           = $0106 =   262          monitor.asm:43
+_main_loop_backspace = $0134 =   308          monitor.asm:79
+_main_loop_getc      = $0116 =   278          monitor.asm:54
+_main_loop_no_space  = $012C =   300          monitor.asm:71
+_main_newline        = $014D =   333          monitor.asm:95
+_nibble_to_val_1     = $0393 =   915          monitor.asm:538
+_size                = $0543 =  1347          monitor.asm:11 (unused)
+_strcmp_equal        = $01F3 =   499          monitor.asm:264
+_strcmp_not_equal    = $01F0 =   496          monitor.asm:261
+_uart1_putc_loop     = $0407 =  1031          monitor.asm:676
+_word_to_val_loop    = $039B =   923          monitor.asm:551
+_z80_                = $0001 =     1          monitor.asm:1 (unused)
+add_argv             = $015B =   347          monitor.asm:111
+ch_to_upper          = $03B1 =   945          monitor.asm:575
+cmd_dump             = $022D =   557          monitor.asm:305
+cmd_help             = $01F6 =   502          monitor.asm:271
+cmd_jump             = $02E1 =   737          monitor.asm:389
+cmd_load             = $030D =   781          monitor.asm:426
+cmd_mset             = $02A4 =   676          monitor.asm:338
+cmd_page             = $02F7 =   759          monitor.asm:408
+dump                 = $034F =   847          monitor.asm:480
+get_index            = $01A5 =   421          monitor.asm:174
+get_word_from_index  = $01CC =   460          monitor.asm:216
+handle_cmd           = $0177 =   375          monitor.asm:136
+init                 = $0000 =     0          monitor.asm:12 (unused)
+is_ascii             = $03BA =   954          monitor.asm:591
+jump_code            = $0539 =  1337          monitor.asm:743
+jump_code_len        = $000A =    10          monitor.asm:744
+lst_cmds_ptr         = $052D =  1325          monitor.asm:740
+lst_cmds_str_dump    = $046C =  1132          monitor.asm:734
+lst_cmds_str_help    = $0456 =  1110          monitor.asm:733
+lst_cmds_str_jump    = $04C3 =  1219          monitor.asm:736
+lst_cmds_str_load    = $04FD =  1277          monitor.asm:738
+lst_cmds_str_mset    = $049F =  1183          monitor.asm:735
+lst_cmds_str_page    = $04DA =  1242          monitor.asm:737
+lst_cmds_str_ptr     = $0448 =  1096          monitor.asm:732
+main                 = $0100 =   256          monitor.asm:40
+nibble_to_val        = $038A =   906          monitor.asm:533
+print_byte           = $03D1 =   977          monitor.asm:618
+print_nibble         = $03C3 =   963          monitor.asm:604
+print_nibble_1       = $03CD =   973          monitor.asm:610
+print_word           = $03DE =   990          monitor.asm:633
+str_cmd_dump_help    = $025A =   602          monitor.asm:331
+str_cmd_help         = $0221 =   545          monitor.asm:298
+str_error            = $0440 =  1088          monitor.asm:729
+str_hello            = $0434 =  1076          monitor.asm:727
+str_promt            = $043D =  1085          monitor.asm:728
+strcmp               = $01DF =   479          monitor.asm:245
+uart1_getch          = $041D =  1053          monitor.asm:703
+uart1_newline        = $0427 =  1063          monitor.asm:714
+uart1_putc           = $0406 =  1030          monitor.asm:674
+uart1_puts           = $0412 =  1042          monitor.asm:691
+uart_init            = $03E9 =  1001          monitor.asm:645
+word_to_val          = $0398 =   920          monitor.asm:548
+
+
+total time: 0.0034 sec.
+no errors

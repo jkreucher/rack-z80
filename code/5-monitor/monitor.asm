@@ -304,7 +304,7 @@ str_cmd_help: .db "Commands:", 0x0D, 0x0A, 0x00
 ;   puts first argument in bc, second in de
 cmd_dump:
 	ld a, (PTR_ARGC)
-	cp 2
+	cp 3
 	jr nz, _cmd_dump_error
 	; get second argument
 	ld hl, PTR_ARGV
@@ -312,16 +312,23 @@ cmd_dump:
 	call get_word_from_index
 	; convert string to hex word
 	call word_to_val
-	; dump memory
-	ld hl, bc
-	call dump_mem
+	push bc
+	; get third argument
+	ld hl, PTR_ARGV
+	ld a, 2
+	call get_word_from_index
+	; convert string to hex word
+	call word_to_val
+	; dump memory (start in hl, end in bc)
+	pop hl
+	call dump
 	call uart1_newline
 	ret
 _cmd_dump_error
 	ld hl, str_cmd_dump_help
 	call uart1_puts
 	ret
-str_cmd_dump_help: .db "Usage: dump <start_addr>", 0x0D, 0x0A, "<start_addr> in hex", 0x0D, 0x0A, "example: dump 1000", 0x0D, 0x0A, 0x00
+str_cmd_dump_help: .db "Usage: dump <start_addr> <end_addr>", 0x0D, 0x0A, "address in hex", 0x0D, 0x0A, "example: dump 1000", 0x0D, 0x0A, 0x00
 
 
 
@@ -467,40 +474,56 @@ _cmd_load_copy_loop:
 
 
 
-; dump_mem
-;   starting address in hl, dumps 256 bytes
-dump_mem:
-	push af
-	push bc
-	ld b, 0x00
-_dump_mem_loop:
-	; check if newline needed
-	ld a, l
-	and 0x0F
-	jr nz, _dump_mem_1 ; skip newline
-	call uart1_newline
+; dump
+;   hl - start address
+;   bc - end address
+dump:
+	push de
+	ld de, bc
+	
+_dump_line:
 	; print address
-	ld a, h
-	call print_byte
-	ld a, l
-	call print_byte
+	call print_word
+	; print colon and space
 	ld a, ':'
 	call uart1_putc
 	ld a, ' '
 	call uart1_putc
-_dump_mem_1:
-	; print byte
+	; print 16 bytes
+	push hl
+	ld b, 0x10
+_dump_line_loop:
 	ld a, (hl)
 	call print_byte
 	ld a, ' '
 	call uart1_putc
-	; address counter
 	inc hl
-	; byte counter
-	dec b
-	jr nz, _dump_mem_loop
-	pop bc
-	pop af
+	; decrement b and jump if b not zero
+	djnz _dump_line_loop
+	; get memory location
+	pop hl
+	ld b, 0x10
+_dump_ascii_loop:
+	ld a, (hl)
+	; check if ascii
+	call is_ascii
+	jr c, _dump_ascii_loop_is_ascii
+	; not ascii: use '.' as placeholder
+	ld a, '.'
+_dump_ascii_loop_is_ascii:
+	call uart1_putc
+	inc hl
+	; decrement b and jump if b not zero
+	djnz _dump_ascii_loop
+	; 16 bytes printed
+	call uart1_newline
+	; check if at the end
+	or a
+	sbc hl, de
+	add hl, de
+	jr c, _dump_line
+	; end of dump
+	pop de
 	ret
 
 
@@ -562,6 +585,20 @@ ch_to_upper:
 
 
 
+; checks if byte is a printable ascii char
+;   a - byte to check
+;   Returns: if printable char then carry flag is set
+is_ascii:
+	cp 0x20
+	jr c, _is_ascii_nope
+	cp 0x7F
+	ret
+_is_ascii_nope:
+	ccf
+	ret
+
+
+
 ; print_nibble
 ;   byte in A, convert to char and print via uart
 print_nibble:
@@ -587,6 +624,19 @@ print_byte:
 	call print_nibble
 	pop af
 	call print_nibble
+	ret
+
+
+
+; print a 16-Bit word to serial port as hex value
+;   hl - word to print in hex
+print_word:
+	push af
+	ld a, h
+	call print_byte
+	ld a, l
+	call print_byte
+	pop af
 	ret
 
 

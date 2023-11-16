@@ -1,0 +1,257 @@
+                        ; --------------------------------------
+                        ; zasm: assemble "dump.asm"
+                        ; date: 2023-11-16 00:13:53
+                        ; --------------------------------------
+
+
+                        ; defines
+0000:                   PORT_MEMPAGE	.equ	0x00
+0010:                   PORT_UART1		.equ	0x10
+0018:                   PORT_UART2		.equ	0x18
+                        
+                        
+0000:                   .org 0x0000
+0000:                   init:
+0000: F3       [ 4]     	di
+0001: 31FFFF   [14]     	ld sp, 0xFFFF
+0004: 3E00     [21]     	ld a, 0x00
+0006: ED47     [30]     	ld i, a
+0008: ED5E     [38]     	im 2
+000A: C30001   [48]     	jp main
+                        
+                        
+                        
+000D: FFFFFFFF          .org 0x0100
+0011: FF...             
+0100:                   main:
+                        	; device init
+0100: CD7701   [17]     	call uart_init
+0103: 210000   [27]     	ld hl, 0x0000
+0106: 010002   [37]     	ld bc, 0x0200
+0109: CD0D01   [54]     	call dump
+010C: 76       [58]     	halt
+                        
+                        
+                        ; dump
+                        ;   hl - start address
+                        ;   bc - end address
+010D:                   dump:
+010D: D5       [11]     	push de
+010E: 5059     [19]     	ld de, bc
+                        	
+0110:                   _dump_line:
+                        	; print address
+0110: CD5101   [17]     	call print_word
+                        	; print colon and space
+0113: 3E3A     [24]     	ld a, ':'
+0115: CD9401   [41]     	call uart1_putc
+0118: 3E20     [48]     	ld a, ' '
+011A: CD9401   [65]     	call uart1_putc
+                        	; print 16 bytes
+011D: E5       [76]     	push hl
+011E: 0610     [83]     	ld b, 0x10
+0120:                   _dump_line_loop:
+0120: 7E       [ 7]     	ld a, (hl)
+0121: CD5C01   [24]     	call print_byte
+0124: 3E20     [31]     	ld a, ' '
+0126: CD9401   [48]     	call uart1_putc
+0129: 23       [54]     	inc hl
+                        	; decrement b and jump if b not zero
+012A: 10F4     [62|67]  	djnz _dump_line_loop
+                        	; get memory location
+012C: E1       [72]     	pop hl
+012D: 0610     [79]     	ld b, 0x10
+012F:                   _dump_ascii_loop:
+012F: 7E       [ 7]     	ld a, (hl)
+                        	; check if ascii
+0130: CD4801   [24]     	call is_ascii
+0133: 3802     [31|36]  	jr c, _dump_ascii_loop_is_ascii
+                        	; not ascii: use '.' as placeholder
+0135: 3E2E     [38]     	ld a, '.'
+0137:                   _dump_ascii_loop_is_ascii:
+0137: CD9401   [17]     	call uart1_putc
+013A: 23       [23]     	inc hl
+                        	; decrement b and jump if b not zero
+013B: 10F2     [31|36]  	djnz _dump_ascii_loop
+                        	; 16 bytes printed
+013D: CDB501   [48]     	call uart1_newline
+                        	; check if at the end
+0140: B7       [52]     	or a
+0141: ED52     [67]     	sbc hl, de
+0143: 19       [78]     	add hl, de
+0144: 38CA     [85|90]  	jr c, _dump_line
+                        	; end of dump
+0146: D1       [95]     	pop de
+0147: C9       [105]    	ret
+                        
+                        
+                        
+                        ; checks if byte is a printable ascii char
+                        ;   a - byte to check
+                        ;   Returns: if printable char then carry flag is set
+0148:                   is_ascii:
+0148: FE20     [ 7]     	cp 0x20
+014A: 3803     [14|19]  	jr c, _is_ascii_nope
+014C: FE7F     [21]     	cp 0x7F
+014E: C9       [31]     	ret
+014F:                   _is_ascii_nope:
+014F: 3F       [ 4]     	ccf
+0150: C9       [14]     	ret
+                        
+                        
+                        
+                        ; print a 16-Bit word to serial port as hex value
+                        ;   hl - word to print in hex
+0151:                   print_word:
+0151: F5       [11]     	push af
+0152: 7C       [15]     	ld a, h
+0153: CD5C01   [32]     	call print_byte
+0156: 7D       [36]     	ld a, l
+0157: CD5C01   [53]     	call print_byte
+015A: F1       [63]     	pop af
+015B: C9       [73]     	ret
+                        
+                        
+                        ; print a byte as hex value
+                        ;   a - byte to print in hex
+015C:                   print_byte:
+015C: F5       [11]     	push af
+015D: 0F       [15]     	rrca
+015E: 0F       [19]     	rrca
+015F: 0F       [23]     	rrca
+0160: 0F       [27]     	rrca
+0161: CD6901   [44]     	call print_nibble
+0164: F1       [54]     	pop af
+0165: CD6901   [71]     	call print_nibble
+0168: C9       [81]     	ret
+                        
+                        
+                        ; print a nibble as hex value
+                        ;   byte in A, convert to char and print via uart
+0169:                   print_nibble:
+0169: E60F     [ 7]     	and 0x0F
+016B: C630     [14]     	add a, '0'
+016D: FE3A     [21]     	cp '9'+1
+016F: 3802     [28|33]  	jr c, print_nibble_1
+0171: C607     [35]     	add a, 'A'-'0'-0xA
+0173:                   print_nibble_1:
+0173: CD9401   [17]     	call uart1_putc
+0176: C9       [27]     	ret
+                        
+                        
+                        
+                        ;   init uart port
+0177:                   uart_init:
+                        	; UART1
+                        	; LCR: Set DLAB Bit for Baud Rate
+0177: 3E80     [ 7]     	ld a, 0x80
+0179: D313     [18]     	out (PORT_UART1+3), a
+                        	; Set Baud Rate
+017B: 3E0C     [25]     	ld a, 0x0c
+017D: D310     [36]     	out (PORT_UART1), a
+017F: 3E00     [43]     	ld a, 0x00
+0181: D311     [54]     	out (PORT_UART1+1), a
+                        	; LCR: 8 bit, one stop, no parity, DLAB off
+0183: 3E03     [61]     	ld a, 0x03
+0185: D313     [72]     	out (PORT_UART1+3), a
+                        	; No Interrupt
+0187: 3E00     [79]     	ld a, 0x00
+0189: D311     [90]     	out (PORT_UART1+1), a
+                        	; FCR: FIFO off
+018B: 3E00     [97]     	ld a, 0x00
+018D: D312     [108]    	out (PORT_UART1+2), a
+                        	; MCR: Deactivate all Pins
+018F: 3E00     [115]    	ld a, 0x00
+0191: D314     [126]    	out (PORT_UART1+4), a
+                        	; return
+0193: C9       [136]    	ret
+                        
+                        
+                        
+                        ; uart1_putc
+                        ;   sends a single char in a
+0194:                   uart1_putc:
+0194: F5       [11]     	push af
+0195:                   _uart1_putc_loop:
+                        	; wait till ready
+0195: DB15     [11]     	in a, (PORT_UART1+5)
+0197: E640     [18]     	and 0x40
+0199: CA9501   [28|28]  	jp z, _uart1_putc_loop
+                        	; ready to send char now
+019C: F1       [38]     	pop af
+019D: D310     [49]     	out (PORT_UART1), a
+                        	; return from subroutine
+019F: C9       [59]     	ret
+                        
+                        
+                        
+                        ; uart1_puts
+                        ;   sends a 0 terminated string. Pointer in hl.
+01A0:                   uart1_puts:
+01A0: 7E       [ 7]     	ld a, (hl)
+01A1: F600     [14]     	or 0
+01A3: C8       [19|25]  	ret z	; end of string? Yes: return
+01A4: CD9401   [36]     	call uart1_putc
+01A7: 23       [42]     	inc hl	; next character
+01A8: C3A001   [52]     	jp uart1_puts
+                        
+                        
+                        
+                        ; uart1_getch
+                        ;   waits until single character received. Character in a
+01AB:                   uart1_getch:
+01AB: DB15     [11]     	in a, (PORT_UART1+5)
+01AD: E601     [18]     	and 0x01			; received char?
+01AF: CAAB01   [28|28]  	jp z, uart1_getch   ; loop until a char is received
+01B2: DB10     [39]     	in a, (PORT_UART1)	; get char
+01B4: C9       [49]     	ret
+                        
+                        
+                        
+                        ; uart1_newline
+                        ;   prints newline to terminal
+01B5:                   uart1_newline:
+01B5: F5       [11]     	push af
+01B6: 3E0A     [18]     	ld a, 0x0A
+01B8: CD9401   [35]     	call uart1_putc
+01BB: 3E0D     [42]     	ld a, 0x0D
+01BD: CD9401   [59]     	call uart1_putc
+01C0: F1       [69]     	pop af
+01C1: C9       [79]     	ret
+
+
+; +++ segments +++
+
+#CODE          = $0000 =     0,  size = $01C2 =   450
+
+; +++ global symbols +++
+
+PORT_MEMPAGE     = $0000 =     0          dump.asm:2 (unused)
+PORT_UART1       = $0010 =    16          dump.asm:3
+PORT_UART2       = $0018 =    24          dump.asm:4 (unused)
+_dump_ascii_loop = $012F =   303          dump.asm:57
+_dump_ascii_loop_is_ascii = $0137 =   311          dump.asm:64
+_dump_line       = $0110 =   272          dump.asm:35
+_dump_line_loop  = $0120 =   288          dump.asm:46
+_end             = $01C2 =   450          dump.asm:7 (unused)
+_is_ascii_nope   = $014F =   335          dump.asm:90
+_size            = $01C2 =   450          dump.asm:7 (unused)
+_uart1_putc_loop = $0195 =   405          dump.asm:168
+_z80_            = $0001 =     1          dump.asm:1 (unused)
+dump             = $010D =   269          dump.asm:31
+init             = $0000 =     0          dump.asm:8 (unused)
+is_ascii         = $0148 =   328          dump.asm:85
+main             = $0100 =   256          dump.asm:19
+print_byte       = $015C =   348          dump.asm:110
+print_nibble     = $0169 =   361          dump.asm:124
+print_nibble_1   = $0173 =   371          dump.asm:130
+print_word       = $0151 =   337          dump.asm:98
+uart1_getch      = $01AB =   427          dump.asm:195
+uart1_newline    = $01B5 =   437          dump.asm:206
+uart1_putc       = $0194 =   404          dump.asm:166
+uart1_puts       = $01A0 =   416          dump.asm:183
+uart_init        = $0177 =   375          dump.asm:137
+
+
+total time: 0.0011 sec.
+no errors
